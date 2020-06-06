@@ -1,0 +1,7 @@
+﻿  main.cpp
+  syntactic_analyzer.cpp
+D:\Applications\DevelopApps\Microsoft Visual Studio\repos\Compiler_v2\Compiler_v2\syntactic_analyzer.cpp(614,21): warning C4018: “<”: 有符号/无符号不匹配
+D:\Applications\DevelopApps\Microsoft Visual Studio\repos\Compiler_v2\Compiler_v2\syntactic_analyzer.cpp(616,22): warning C4018: “<”: 有符号/无符号不匹配
+D:\Applications\DevelopApps\Microsoft Visual Studio\repos\Compiler_v2\Compiler_v2\syntactic_analyzer.cpp(618,11): warning C4018: “<”: 有符号/无符号不匹配
+  正在生成代码...
+  Compiler_v2.vcxproj -> D:\Applications\DevelopApps\Microsoft Visual Studio\repos\Compiler_v2\Debug\Compiler_v2.exe
