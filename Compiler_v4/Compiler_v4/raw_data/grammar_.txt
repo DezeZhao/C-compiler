@@ -1,0 +1,45 @@
+Program->StmtString
+StmtString->StmtLoop Stmt
+StmtLoop->StmtLoop Stmt|$
+Stmt->int id StmtType|void id FunctionBegin FunctionStmt
+StmtType->VariableStmt|FunctionBegin FunctionStmt
+FunctionBegin->$
+VariableStmt->;
+FunctionStmt->( FormalParam ) SentenceBlock FunctionEnd
+FunctionEnd->$
+FormalParam->FormalParamList|void|$
+FormalParamList->ParamLoop Param
+ParamLoop->ParamLoop Param ,|$
+Param->int id
+SentenceBlock->SB_M { InternalStmt SentenceString }
+SB_M->$
+InternalStmt->$|InternalVariableStmt ; InternalStmt
+InternalVariableStmt->int id
+SentenceString->SentenceLoop Sentence
+SentenceLoop->SentenceLoop Sentence|$
+Sentence->IfSentence|WhileSentence|ReturnSentence|AssignSentence
+AssignSentence->id = Expression ;
+ReturnSentence->return ReturnExpression ;
+ReturnExpression->Expression|$
+WhileSentence->while While_M1 ( Expression ) While_M2 SentenceBlock
+While_M1->$
+While_M2->$
+IfSentence->if ( Expression ) If_M1 SentenceBlock ElseSentenceBlock
+ElseSentenceBlock->$|If_N else If_M2 SentenceBlock
+If_M1->$
+If_N->$
+If_M2->$
+Expression->AddExpressionLoop AddExpression
+AddExpressionLoop->AddExpressionLoop AddExpression Relop|$
+Relop-><|>|>=|<=|!=|==
+AddExpression->ItemLoop Item
+ItemLoop->ItemLoop Item +|ItemLoop Item -|$
+Item->FactorLoop Factor
+FactorLoop->FactorLoop Factor *|FactorLoop Factor /|$
+Factor->ConstValue|( Expression )|id FTYPE
+FTYPE->CallFunction|$
+CallFunction->( CallCheck ActualParamList )
+CallCheck->$
+ActualParamList->ExpressionLoop Expression|$
+ExpressionLoop->ExpressionLoop Expression ,|$
+ConstValue->const_int

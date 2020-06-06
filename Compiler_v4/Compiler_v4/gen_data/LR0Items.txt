@@ -1,0 +1,193 @@
+Start->， Program
+Start->Program，
+Program->， StmtString
+Program->StmtString，
+StmtString->， StmtLoop Stmt
+StmtString->StmtLoop ， Stmt
+StmtString->StmtLoop Stmt，
+StmtLoop->， StmtLoop Stmt
+StmtLoop->StmtLoop ， Stmt
+StmtLoop->StmtLoop Stmt，
+StmtLoop->，
+Stmt->， int id StmtType
+Stmt->int ， id StmtType
+Stmt->int id ， StmtType
+Stmt->int id StmtType，
+Stmt->， void id FunctionBegin FunctionStmt
+Stmt->void ， id FunctionBegin FunctionStmt
+Stmt->void id ， FunctionBegin FunctionStmt
+Stmt->void id FunctionBegin ， FunctionStmt
+Stmt->void id FunctionBegin FunctionStmt，
+StmtType->， VariableStmt
+StmtType->VariableStmt，
+StmtType->， FunctionBegin FunctionStmt
+StmtType->FunctionBegin ， FunctionStmt
+StmtType->FunctionBegin FunctionStmt，
+FunctionBegin->，
+VariableStmt->， ;
+VariableStmt->;，
+FunctionStmt->， ( FormalParam ) SentenceBlock FunctionEnd
+FunctionStmt->( ， FormalParam ) SentenceBlock FunctionEnd
+FunctionStmt->( FormalParam ， ) SentenceBlock FunctionEnd
+FunctionStmt->( FormalParam ) ， SentenceBlock FunctionEnd
+FunctionStmt->( FormalParam ) SentenceBlock ， FunctionEnd
+FunctionStmt->( FormalParam ) SentenceBlock FunctionEnd，
+FunctionEnd->，
+FormalParam->， FormalParamList
+FormalParam->FormalParamList，
+FormalParam->， void
+FormalParam->void，
+FormalParam->，
+FormalParamList->， ParamLoop Param
+FormalParamList->ParamLoop ， Param
+FormalParamList->ParamLoop Param，
+ParamLoop->， ParamLoop Param ,
+ParamLoop->ParamLoop ， Param ,
+ParamLoop->ParamLoop Param ， ,
+ParamLoop->ParamLoop Param ,，
+ParamLoop->，
+Param->， int id
+Param->int ， id
+Param->int id，
+SentenceBlock->， SB_M { InternalStmt SentenceString }
+SentenceBlock->SB_M ， { InternalStmt SentenceString }
+SentenceBlock->SB_M { ， InternalStmt SentenceString }
+SentenceBlock->SB_M { InternalStmt ， SentenceString }
+SentenceBlock->SB_M { InternalStmt SentenceString ， }
+SentenceBlock->SB_M { InternalStmt SentenceString }，
+SB_M->，
+InternalStmt->，
+InternalStmt->， InternalVariableStmt ; InternalStmt
+InternalStmt->InternalVariableStmt ， ; InternalStmt
+InternalStmt->InternalVariableStmt ; ， InternalStmt
+InternalStmt->InternalVariableStmt ; InternalStmt，
+InternalVariableStmt->， int id
+InternalVariableStmt->int ， id
+InternalVariableStmt->int id，
+SentenceString->， SentenceLoop Sentence
+SentenceString->SentenceLoop ， Sentence
+SentenceString->SentenceLoop Sentence，
+SentenceLoop->， SentenceLoop Sentence
+SentenceLoop->SentenceLoop ， Sentence
+SentenceLoop->SentenceLoop Sentence，
+SentenceLoop->，
+Sentence->， IfSentence
+Sentence->IfSentence，
+Sentence->， WhileSentence
+Sentence->WhileSentence，
+Sentence->， ReturnSentence
+Sentence->ReturnSentence，
+Sentence->， AssignSentence
+Sentence->AssignSentence，
+AssignSentence->， id = Expression ;
+AssignSentence->id ， = Expression ;
+AssignSentence->id = ， Expression ;
+AssignSentence->id = Expression ， ;
+AssignSentence->id = Expression ;，
+ReturnSentence->， return ReturnExpression ;
+ReturnSentence->return ， ReturnExpression ;
+ReturnSentence->return ReturnExpression ， ;
+ReturnSentence->return ReturnExpression ;，
+ReturnExpression->， Expression
+ReturnExpression->Expression，
+ReturnExpression->，
+WhileSentence->， while While_M1 ( Expression ) While_M2 SentenceBlock
+WhileSentence->while ， While_M1 ( Expression ) While_M2 SentenceBlock
+WhileSentence->while While_M1 ， ( Expression ) While_M2 SentenceBlock
+WhileSentence->while While_M1 ( ， Expression ) While_M2 SentenceBlock
+WhileSentence->while While_M1 ( Expression ， ) While_M2 SentenceBlock
+WhileSentence->while While_M1 ( Expression ) ， While_M2 SentenceBlock
+WhileSentence->while While_M1 ( Expression ) While_M2 ， SentenceBlock
+WhileSentence->while While_M1 ( Expression ) While_M2 SentenceBlock，
+While_M1->，
+While_M2->，
+IfSentence->， if ( Expression ) If_M1 SentenceBlock ElseSentenceBlock
+IfSentence->if ， ( Expression ) If_M1 SentenceBlock ElseSentenceBlock
+IfSentence->if ( ， Expression ) If_M1 SentenceBlock ElseSentenceBlock
+IfSentence->if ( Expression ， ) If_M1 SentenceBlock ElseSentenceBlock
+IfSentence->if ( Expression ) ， If_M1 SentenceBlock ElseSentenceBlock
+IfSentence->if ( Expression ) If_M1 ， SentenceBlock ElseSentenceBlock
+IfSentence->if ( Expression ) If_M1 SentenceBlock ， ElseSentenceBlock
+IfSentence->if ( Expression ) If_M1 SentenceBlock ElseSentenceBlock，
+ElseSentenceBlock->，
+ElseSentenceBlock->， If_N else If_M2 SentenceBlock
+ElseSentenceBlock->If_N ， else If_M2 SentenceBlock
+ElseSentenceBlock->If_N else ， If_M2 SentenceBlock
+ElseSentenceBlock->If_N else If_M2 ， SentenceBlock
+ElseSentenceBlock->If_N else If_M2 SentenceBlock，
+If_M1->，
+If_N->，
+If_M2->，
+Expression->， AddExpressionLoop AddExpression
+Expression->AddExpressionLoop ， AddExpression
+Expression->AddExpressionLoop AddExpression，
+AddExpressionLoop->， AddExpressionLoop AddExpression Relop
+AddExpressionLoop->AddExpressionLoop ， AddExpression Relop
+AddExpressionLoop->AddExpressionLoop AddExpression ， Relop
+AddExpressionLoop->AddExpressionLoop AddExpression Relop，
+AddExpressionLoop->，
+Relop->， <
+Relop-><，
+Relop->， >
+Relop->>，
+Relop->， >=
+Relop->>=，
+Relop->， <=
+Relop-><=，
+Relop->， !=
+Relop->!=，
+Relop->， ==
+Relop->==，
+AddExpression->， ItemLoop Item
+AddExpression->ItemLoop ， Item
+AddExpression->ItemLoop Item，
+ItemLoop->， ItemLoop Item +
+ItemLoop->ItemLoop ， Item +
+ItemLoop->ItemLoop Item ， +
+ItemLoop->ItemLoop Item +，
+ItemLoop->， ItemLoop Item -
+ItemLoop->ItemLoop ， Item -
+ItemLoop->ItemLoop Item ， -
+ItemLoop->ItemLoop Item -，
+ItemLoop->，
+Item->， FactorLoop Factor
+Item->FactorLoop ， Factor
+Item->FactorLoop Factor，
+FactorLoop->， FactorLoop Factor *
+FactorLoop->FactorLoop ， Factor *
+FactorLoop->FactorLoop Factor ， *
+FactorLoop->FactorLoop Factor *，
+FactorLoop->， FactorLoop Factor /
+FactorLoop->FactorLoop ， Factor /
+FactorLoop->FactorLoop Factor ， /
+FactorLoop->FactorLoop Factor /，
+FactorLoop->，
+Factor->， ConstValue
+Factor->ConstValue，
+Factor->， ( Expression )
+Factor->( ， Expression )
+Factor->( Expression ， )
+Factor->( Expression )，
+Factor->， id FTYPE
+Factor->id ， FTYPE
+Factor->id FTYPE，
+FTYPE->， CallFunction
+FTYPE->CallFunction，
+FTYPE->，
+CallFunction->， ( CallCheck ActualParamList )
+CallFunction->( ， CallCheck ActualParamList )
+CallFunction->( CallCheck ， ActualParamList )
+CallFunction->( CallCheck ActualParamList ， )
+CallFunction->( CallCheck ActualParamList )，
+CallCheck->，
+ActualParamList->， ExpressionLoop Expression
+ActualParamList->ExpressionLoop ， Expression
+ActualParamList->ExpressionLoop Expression，
+ActualParamList->，
+ExpressionLoop->， ExpressionLoop Expression ,
+ExpressionLoop->ExpressionLoop ， Expression ,
+ExpressionLoop->ExpressionLoop Expression ， ,
+ExpressionLoop->ExpressionLoop Expression ,，
+ExpressionLoop->，
+ConstValue->， const_int
+ConstValue->const_int，
