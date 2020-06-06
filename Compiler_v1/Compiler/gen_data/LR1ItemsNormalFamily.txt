@@ -1,0 +1,766 @@
+===========================项目集I1==============================
+Start->· Program ,[#]
+Program->· StmtString ,[#]
+StmtString->· StmtLoop Stmt ,[#]
+StmtLoop->· StmtLoop Stmt ,[char float int void]
+StmtLoop->· ,[char float int void]
+
+
+
+===========================项目集I2==============================
+Start->Program· ,[#]
+
+
+
+===========================项目集I3==============================
+Program->StmtString· ,[#]
+
+
+
+===========================项目集I4==============================
+StmtString->StmtLoop · Stmt ,[#]
+StmtLoop->StmtLoop · Stmt ,[char float int void]
+Stmt->· VariableType id StmtType ,[char float int void]
+Stmt->· void id FunctionStmt ,[char float int void]
+VariableType->· int ,[id]
+VariableType->· float ,[id]
+VariableType->· char ,[id]
+
+
+
+===========================项目集I5==============================
+StmtString->StmtLoop Stmt· ,[#]
+StmtLoop->StmtLoop Stmt· ,[char float int void]
+
+
+
+===========================项目集I6==============================
+Stmt->VariableType · id StmtType ,[char float int void]
+
+
+
+===========================项目集I7==============================
+Stmt->void · id FunctionStmt ,[char float int void]
+
+
+
+===========================项目集I8==============================
+VariableType->int· ,[id]
+
+
+
+===========================项目集I9==============================
+VariableType->float· ,[id]
+
+
+
+===========================项目集I10==============================
+VariableType->char· ,[id]
+
+
+
+===========================项目集I11==============================
+Stmt->VariableType id · StmtType ,[char float int void]
+StmtType->· VariableStmt ,[char float int void]
+StmtType->· FunctionStmt ,[char float int void]
+VariableStmt->· ; ,[char float int void]
+FunctionStmt->· ( FormalPara ) SentenceBlock ,[char float int void]
+
+
+
+===========================项目集I12==============================
+Stmt->void id · FunctionStmt ,[char float int void]
+FunctionStmt->· ( FormalPara ) SentenceBlock ,[char float int void]
+
+
+
+===========================项目集I13==============================
+Stmt->VariableType id StmtType· ,[char float int void]
+
+
+
+===========================项目集I14==============================
+StmtType->VariableStmt· ,[char float int void]
+
+
+
+===========================项目集I15==============================
+StmtType->FunctionStmt· ,[char float int void]
+
+
+
+===========================项目集I16==============================
+VariableStmt->;· ,[char float int void]
+
+
+
+===========================项目集I17==============================
+VariableType->· int ,[id]
+VariableType->· float ,[id]
+VariableType->· char ,[id]
+FunctionStmt->( · FormalPara ) SentenceBlock ,[char float int void]
+FormalPara->· FormalParaList ,[)]
+FormalPara->· void ,[)]
+FormalPara->· ,[)]
+FormalParaList->· ParaLoop ,[)]
+FormalParaList->· Para ,[)]
+ParaLoop->· ParaLoop Para , ,[)]
+ParaLoop->· ,[)]
+Para->· VariableType id ,[)]
+
+
+
+===========================项目集I18==============================
+Stmt->void id FunctionStmt· ,[char float int void]
+
+
+
+===========================项目集I19==============================
+FunctionStmt->( FormalPara · ) SentenceBlock ,[char float int void]
+
+
+
+===========================项目集I20==============================
+FormalPara->FormalParaList· ,[)]
+
+
+
+===========================项目集I21==============================
+FormalPara->void· ,[)]
+
+
+
+===========================项目集I22==============================
+VariableType->· int ,[id]
+VariableType->· float ,[id]
+VariableType->· char ,[id]
+FormalParaList->ParaLoop· ,[)]
+ParaLoop->ParaLoop · Para , ,[)]
+Para->· VariableType id ,[,]
+
+
+
+===========================项目集I23==============================
+FormalParaList->Para· ,[)]
+
+
+
+===========================项目集I24==============================
+Para->VariableType · id ,[)]
+
+
+
+===========================项目集I25==============================
+FunctionStmt->( FormalPara ) · SentenceBlock ,[char float int void]
+SentenceBlock->· { InternalStmt SentenceString } ,[char float int void]
+
+
+
+===========================项目集I26==============================
+ParaLoop->ParaLoop Para · , ,[)]
+
+
+
+===========================项目集I27==============================
+Para->VariableType · id ,[,]
+
+
+
+===========================项目集I28==============================
+Para->VariableType id· ,[)]
+
+
+
+===========================项目集I29==============================
+FunctionStmt->( FormalPara ) SentenceBlock· ,[char float int void]
+
+
+
+===========================项目集I30==============================
+VariableType->· int ,[id]
+VariableType->· float ,[id]
+VariableType->· char ,[id]
+SentenceBlock->{ · InternalStmt SentenceString } ,[char float int void]
+InternalStmt->· ,[id if return while]
+InternalStmt->· InternalVariableStmt ; InternalStmt ,[id if return while]
+InternalVariableStmt->· VariableType id ,[;]
+
+
+
+===========================项目集I31==============================
+ParaLoop->ParaLoop Para ,· ,[)]
+
+
+
+===========================项目集I32==============================
+Para->VariableType id· ,[,]
+
+
+
+===========================项目集I33==============================
+SentenceBlock->{ InternalStmt · SentenceString } ,[char float int void]
+SentenceString->· SentenceLoop Sentence ,[}]
+SentenceLoop->· SentenceLoop Sentence ,[id if return while]
+SentenceLoop->· ,[id if return while]
+
+
+
+===========================项目集I34==============================
+InternalStmt->InternalVariableStmt · ; InternalStmt ,[id if return while]
+
+
+
+===========================项目集I35==============================
+InternalVariableStmt->VariableType · id ,[;]
+
+
+
+===========================项目集I36==============================
+SentenceBlock->{ InternalStmt SentenceString · } ,[char float int void]
+
+
+
+===========================项目集I37==============================
+SentenceString->SentenceLoop · Sentence ,[}]
+SentenceLoop->SentenceLoop · Sentence ,[id if return while]
+Sentence->· IfSentence ,[id if return while]
+Sentence->· WhileSentence ,[id if return while]
+Sentence->· ReturnSentence ,[id if return while]
+Sentence->· AssignSentence ,[id if return while]
+AssignSentence->· id = Expression ,[id if return while]
+ReturnSentence->· return ReturnExpression ; ,[id if return while]
+WhileSentence->· while While_M1 ( Expression ) While_M2 SentenceBlock ,[id if return while]
+IfSentence->· if ( Expression ) If_M1 SentenceBlock ElseSentenceBlock ,[id if return while]
+
+
+
+===========================项目集I38==============================
+VariableType->· int ,[id]
+VariableType->· float ,[id]
+VariableType->· char ,[id]
+InternalStmt->· ,[id if return while]
+InternalStmt->· InternalVariableStmt ; InternalStmt ,[id if return while]
+InternalStmt->InternalVariableStmt ; · InternalStmt ,[id if return while]
+InternalVariableStmt->· VariableType id ,[;]
+
+
+
+===========================项目集I39==============================
+InternalVariableStmt->VariableType id· ,[;]
+
+
+
+===========================项目集I40==============================
+SentenceBlock->{ InternalStmt SentenceString }· ,[char float int void]
+
+
+
+===========================项目集I41==============================
+SentenceString->SentenceLoop Sentence· ,[}]
+SentenceLoop->SentenceLoop Sentence· ,[id if return while]
+
+
+
+===========================项目集I42==============================
+Sentence->IfSentence· ,[id if return while]
+
+
+
+===========================项目集I43==============================
+Sentence->WhileSentence· ,[id if return while]
+
+
+
+===========================项目集I44==============================
+Sentence->ReturnSentence· ,[id if return while]
+
+
+
+===========================项目集I45==============================
+Sentence->AssignSentence· ,[id if return while]
+
+
+
+===========================项目集I46==============================
+AssignSentence->id · = Expression ,[id if return while]
+
+
+
+===========================项目集I47==============================
+ReturnSentence->return · ReturnExpression ; ,[id if return while]
+ReturnExpression->· Expression ,[;]
+ReturnExpression->· ,[;]
+Expression->· AddExpressionLoop AddExpression ,[;]
+AddExpressionLoop->· AddExpressionLoop AddExpression Relop ,[( char_const float_const id int_const]
+AddExpressionLoop->· ,[( char_const float_const id int_const]
+
+
+
+===========================项目集I48==============================
+WhileSentence->while · While_M1 ( Expression ) While_M2 SentenceBlock ,[id if return while]
+While_M1->· ,[(]
+
+
+
+===========================项目集I49==============================
+IfSentence->if · ( Expression ) If_M1 SentenceBlock ElseSentenceBlock ,[id if return while]
+
+
+
+===========================项目集I50==============================
+InternalStmt->InternalVariableStmt ; InternalStmt· ,[id if return while]
+
+
+
+===========================项目集I51==============================
+AssignSentence->id = · Expression ,[id if return while]
+Expression->· AddExpressionLoop AddExpression ,[id if return while]
+AddExpressionLoop->· AddExpressionLoop AddExpression Relop ,[( char_const float_const id int_const]
+AddExpressionLoop->· ,[( char_const float_const id int_const]
+
+
+
+===========================项目集I52==============================
+ReturnSentence->return ReturnExpression · ; ,[id if return while]
+
+
+
+===========================项目集I53==============================
+ReturnExpression->Expression· ,[;]
+
+
+
+===========================项目集I54==============================
+Expression->AddExpressionLoop · AddExpression ,[;]
+AddExpressionLoop->AddExpressionLoop · AddExpression Relop ,[( char_const float_const id int_const]
+AddExpression->· ItemLoop Item ,[!= < <= == > >=]
+ItemLoop->· ItemLoop Item + ,[( char_const float_const id int_const]
+ItemLoop->· ItemLoop Item - ,[( char_const float_const id int_const]
+ItemLoop->· ,[( char_const float_const id int_const]
+
+
+
+===========================项目集I55==============================
+WhileSentence->while While_M1 · ( Expression ) While_M2 SentenceBlock ,[id if return while]
+
+
+
+===========================项目集I56==============================
+IfSentence->if ( · Expression ) If_M1 SentenceBlock ElseSentenceBlock ,[id if return while]
+Expression->· AddExpressionLoop AddExpression ,[)]
+AddExpressionLoop->· AddExpressionLoop AddExpression Relop ,[( char_const float_const id int_const]
+AddExpressionLoop->· ,[( char_const float_const id int_const]
+
+
+
+===========================项目集I57==============================
+AssignSentence->id = Expression· ,[id if return while]
+
+
+
+===========================项目集I58==============================
+Expression->AddExpressionLoop · AddExpression ,[id if return while]
+AddExpressionLoop->AddExpressionLoop · AddExpression Relop ,[( char_const float_const id int_const]
+AddExpression->· ItemLoop Item ,[!= < <= == > >=]
+ItemLoop->· ItemLoop Item + ,[( char_const float_const id int_const]
+ItemLoop->· ItemLoop Item - ,[( char_const float_const id int_const]
+ItemLoop->· ,[( char_const float_const id int_const]
+
+
+
+===========================项目集I59==============================
+ReturnSentence->return ReturnExpression ;· ,[id if return while]
+
+
+
+===========================项目集I60==============================
+Expression->AddExpressionLoop AddExpression· ,[;]
+AddExpressionLoop->AddExpressionLoop AddExpression · Relop ,[( char_const float_const id int_const]
+Relop->· < ,[( char_const float_const id int_const]
+Relop->· > ,[( char_const float_const id int_const]
+Relop->· >= ,[( char_const float_const id int_const]
+Relop->· <= ,[( char_const float_const id int_const]
+Relop->· != ,[( char_const float_const id int_const]
+Relop->· == ,[( char_const float_const id int_const]
+
+
+
+===========================项目集I61==============================
+AddExpression->ItemLoop · Item ,[!= < <= == > >=]
+ItemLoop->ItemLoop · Item + ,[( char_const float_const id int_const]
+ItemLoop->ItemLoop · Item - ,[( char_const float_const id int_const]
+Item->· FactorLoop Factor ,[-]
+FactorLoop->· FactorLoop Factor * ,[( char_const float_const id int_const]
+FactorLoop->· FactorLoop Factor / ,[( char_const float_const id int_const]
+FactorLoop->· ,[( char_const float_const id int_const]
+
+
+
+===========================项目集I62==============================
+WhileSentence->while While_M1 ( · Expression ) While_M2 SentenceBlock ,[id if return while]
+Expression->· AddExpressionLoop AddExpression ,[)]
+AddExpressionLoop->· AddExpressionLoop AddExpression Relop ,[( char_const float_const id int_const]
+AddExpressionLoop->· ,[( char_const float_const id int_const]
+
+
+
+===========================项目集I63==============================
+IfSentence->if ( Expression · ) If_M1 SentenceBlock ElseSentenceBlock ,[id if return while]
+
+
+
+===========================项目集I64==============================
+Expression->AddExpressionLoop · AddExpression ,[)]
+AddExpressionLoop->AddExpressionLoop · AddExpression Relop ,[( char_const float_const id int_const]
+AddExpression->· ItemLoop Item ,[!= < <= == > >=]
+ItemLoop->· ItemLoop Item + ,[( char_const float_const id int_const]
+ItemLoop->· ItemLoop Item - ,[( char_const float_const id int_const]
+ItemLoop->· ,[( char_const float_const id int_const]
+
+
+
+===========================项目集I65==============================
+Expression->AddExpressionLoop AddExpression· ,[id if return while]
+AddExpressionLoop->AddExpressionLoop AddExpression · Relop ,[( char_const float_const id int_const]
+Relop->· < ,[( char_const float_const id int_const]
+Relop->· > ,[( char_const float_const id int_const]
+Relop->· >= ,[( char_const float_const id int_const]
+Relop->· <= ,[( char_const float_const id int_const]
+Relop->· != ,[( char_const float_const id int_const]
+Relop->· == ,[( char_const float_const id int_const]
+
+
+
+===========================项目集I66==============================
+AddExpressionLoop->AddExpressionLoop AddExpression Relop· ,[( char_const float_const id int_const]
+
+
+
+===========================项目集I67==============================
+Relop-><· ,[( char_const float_const id int_const]
+
+
+
+===========================项目集I68==============================
+Relop->>· ,[( char_const float_const id int_const]
+
+
+
+===========================项目集I69==============================
+Relop->>=· ,[( char_const float_const id int_const]
+
+
+
+===========================项目集I70==============================
+Relop-><=· ,[( char_const float_const id int_const]
+
+
+
+===========================项目集I71==============================
+Relop->!=· ,[( char_const float_const id int_const]
+
+
+
+===========================项目集I72==============================
+Relop->==· ,[( char_const float_const id int_const]
+
+
+
+===========================项目集I73==============================
+AddExpression->ItemLoop Item· ,[!= < <= == > >=]
+ItemLoop->ItemLoop Item · + ,[( char_const float_const id int_const]
+ItemLoop->ItemLoop Item · - ,[( char_const float_const id int_const]
+
+
+
+===========================项目集I74==============================
+Item->FactorLoop · Factor ,[-]
+FactorLoop->FactorLoop · Factor * ,[( char_const float_const id int_const]
+FactorLoop->FactorLoop · Factor / ,[( char_const float_const id int_const]
+Factor->· ConstValue ,[/]
+Factor->· ( Expression ) ,[/]
+Factor->· id FTYPE ,[/]
+ConstValue->· int_const ,[/]
+ConstValue->· float_const ,[/]
+ConstValue->· char_const ,[/]
+
+
+
+===========================项目集I75==============================
+WhileSentence->while While_M1 ( Expression · ) While_M2 SentenceBlock ,[id if return while]
+
+
+
+===========================项目集I76==============================
+IfSentence->if ( Expression ) · If_M1 SentenceBlock ElseSentenceBlock ,[id if return while]
+If_M1->· ,[{]
+
+
+
+===========================项目集I77==============================
+Expression->AddExpressionLoop AddExpression· ,[)]
+AddExpressionLoop->AddExpressionLoop AddExpression · Relop ,[( char_const float_const id int_const]
+Relop->· < ,[( char_const float_const id int_const]
+Relop->· > ,[( char_const float_const id int_const]
+Relop->· >= ,[( char_const float_const id int_const]
+Relop->· <= ,[( char_const float_const id int_const]
+Relop->· != ,[( char_const float_const id int_const]
+Relop->· == ,[( char_const float_const id int_const]
+
+
+
+===========================项目集I78==============================
+ItemLoop->ItemLoop Item +· ,[( char_const float_const id int_const]
+
+
+
+===========================项目集I79==============================
+ItemLoop->ItemLoop Item -· ,[( char_const float_const id int_const]
+
+
+
+===========================项目集I80==============================
+Item->FactorLoop Factor· ,[-]
+FactorLoop->FactorLoop Factor · * ,[( char_const float_const id int_const]
+FactorLoop->FactorLoop Factor · / ,[( char_const float_const id int_const]
+
+
+
+===========================项目集I81==============================
+Factor->ConstValue· ,[/]
+
+
+
+===========================项目集I82==============================
+Expression->· AddExpressionLoop AddExpression ,[)]
+AddExpressionLoop->· AddExpressionLoop AddExpression Relop ,[( char_const float_const id int_const]
+AddExpressionLoop->· ,[( char_const float_const id int_const]
+Factor->( · Expression ) ,[/]
+
+
+
+===========================项目集I83==============================
+Factor->id · FTYPE ,[/]
+FTYPE->· CallFunction ,[/]
+FTYPE->· ,[/]
+CallFunction->· ( ActualParaList ) ,[/]
+
+
+
+===========================项目集I84==============================
+ConstValue->int_const· ,[/]
+
+
+
+===========================项目集I85==============================
+ConstValue->float_const· ,[/]
+
+
+
+===========================项目集I86==============================
+ConstValue->char_const· ,[/]
+
+
+
+===========================项目集I87==============================
+WhileSentence->while While_M1 ( Expression ) · While_M2 SentenceBlock ,[id if return while]
+While_M2->· ,[{]
+
+
+
+===========================项目集I88==============================
+SentenceBlock->· { InternalStmt SentenceString } ,[else id if return while]
+IfSentence->if ( Expression ) If_M1 · SentenceBlock ElseSentenceBlock ,[id if return while]
+
+
+
+===========================项目集I89==============================
+FactorLoop->FactorLoop Factor *· ,[( char_const float_const id int_const]
+
+
+
+===========================项目集I90==============================
+FactorLoop->FactorLoop Factor /· ,[( char_const float_const id int_const]
+
+
+
+===========================项目集I91==============================
+Factor->( Expression · ) ,[/]
+
+
+
+===========================项目集I92==============================
+Factor->id FTYPE· ,[/]
+
+
+
+===========================项目集I93==============================
+FTYPE->CallFunction· ,[/]
+
+
+
+===========================项目集I94==============================
+CallFunction->( · ActualParaList ) ,[/]
+ActualParaList->· ExpressionLoop Expression ,[)]
+ActualParaList->· ,[)]
+ExpressionLoop->· ExpressionLoop Expression ,[( char_const float_const id int_const]
+ExpressionLoop->· ,[( char_const float_const id int_const]
+
+
+
+===========================项目集I95==============================
+SentenceBlock->· { InternalStmt SentenceString } ,[id if return while]
+WhileSentence->while While_M1 ( Expression ) While_M2 · SentenceBlock ,[id if return while]
+
+
+
+===========================项目集I96==============================
+VariableType->· int ,[id]
+VariableType->· float ,[id]
+VariableType->· char ,[id]
+SentenceBlock->{ · InternalStmt SentenceString } ,[else id if return while]
+InternalStmt->· ,[id if return while]
+InternalStmt->· InternalVariableStmt ; InternalStmt ,[id if return while]
+InternalVariableStmt->· VariableType id ,[;]
+
+
+
+===========================项目集I97==============================
+IfSentence->if ( Expression ) If_M1 SentenceBlock · ElseSentenceBlock ,[id if return while]
+ElseSentenceBlock->· ,[id if return while]
+ElseSentenceBlock->· If_N else If_M2 SentenceBlock ,[id if return while]
+If_N->· ,[else]
+
+
+
+===========================项目集I98==============================
+Factor->( Expression )· ,[/]
+
+
+
+===========================项目集I99==============================
+CallFunction->( ActualParaList · ) ,[/]
+
+
+
+===========================项目集I100==============================
+Expression->· AddExpressionLoop AddExpression ,[( char_const float_const id int_const]
+AddExpressionLoop->· AddExpressionLoop AddExpression Relop ,[( char_const float_const id int_const]
+AddExpressionLoop->· ,[( char_const float_const id int_const]
+ActualParaList->ExpressionLoop · Expression ,[)]
+ExpressionLoop->ExpressionLoop · Expression ,[( char_const float_const id int_const]
+
+
+
+===========================项目集I101==============================
+VariableType->· int ,[id]
+VariableType->· float ,[id]
+VariableType->· char ,[id]
+SentenceBlock->{ · InternalStmt SentenceString } ,[id if return while]
+InternalStmt->· ,[id if return while]
+InternalStmt->· InternalVariableStmt ; InternalStmt ,[id if return while]
+InternalVariableStmt->· VariableType id ,[;]
+
+
+
+===========================项目集I102==============================
+WhileSentence->while While_M1 ( Expression ) While_M2 SentenceBlock· ,[id if return while]
+
+
+
+===========================项目集I103==============================
+SentenceBlock->{ InternalStmt · SentenceString } ,[else id if return while]
+SentenceString->· SentenceLoop Sentence ,[}]
+SentenceLoop->· SentenceLoop Sentence ,[id if return while]
+SentenceLoop->· ,[id if return while]
+
+
+
+===========================项目集I104==============================
+IfSentence->if ( Expression ) If_M1 SentenceBlock ElseSentenceBlock· ,[id if return while]
+
+
+
+===========================项目集I105==============================
+ElseSentenceBlock->If_N · else If_M2 SentenceBlock ,[id if return while]
+
+
+
+===========================项目集I106==============================
+CallFunction->( ActualParaList )· ,[/]
+
+
+
+===========================项目集I107==============================
+Expression->AddExpressionLoop · AddExpression ,[( char_const float_const id int_const]
+AddExpressionLoop->AddExpressionLoop · AddExpression Relop ,[( char_const float_const id int_const]
+AddExpression->· ItemLoop Item ,[!= < <= == > >=]
+ItemLoop->· ItemLoop Item + ,[( char_const float_const id int_const]
+ItemLoop->· ItemLoop Item - ,[( char_const float_const id int_const]
+ItemLoop->· ,[( char_const float_const id int_const]
+
+
+
+===========================项目集I108==============================
+ActualParaList->ExpressionLoop Expression· ,[)]
+ExpressionLoop->ExpressionLoop Expression· ,[( char_const float_const id int_const]
+
+
+
+===========================项目集I109==============================
+SentenceBlock->{ InternalStmt · SentenceString } ,[id if return while]
+SentenceString->· SentenceLoop Sentence ,[}]
+SentenceLoop->· SentenceLoop Sentence ,[id if return while]
+SentenceLoop->· ,[id if return while]
+
+
+
+===========================项目集I110==============================
+SentenceBlock->{ InternalStmt SentenceString · } ,[else id if return while]
+
+
+
+===========================项目集I111==============================
+ElseSentenceBlock->If_N else · If_M2 SentenceBlock ,[id if return while]
+If_M2->· ,[{]
+
+
+
+===========================项目集I112==============================
+Expression->AddExpressionLoop AddExpression· ,[( char_const float_const id int_const]
+AddExpressionLoop->AddExpressionLoop AddExpression · Relop ,[( char_const float_const id int_const]
+Relop->· < ,[( char_const float_const id int_const]
+Relop->· > ,[( char_const float_const id int_const]
+Relop->· >= ,[( char_const float_const id int_const]
+Relop->· <= ,[( char_const float_const id int_const]
+Relop->· != ,[( char_const float_const id int_const]
+Relop->· == ,[( char_const float_const id int_const]
+
+
+
+===========================项目集I113==============================
+SentenceBlock->{ InternalStmt SentenceString · } ,[id if return while]
+
+
+
+===========================项目集I114==============================
+SentenceBlock->{ InternalStmt SentenceString }· ,[else id if return while]
+
+
+
+===========================项目集I115==============================
+SentenceBlock->· { InternalStmt SentenceString } ,[id if return while]
+ElseSentenceBlock->If_N else If_M2 · SentenceBlock ,[id if return while]
+
+
+
+===========================项目集I116==============================
+SentenceBlock->{ InternalStmt SentenceString }· ,[id if return while]
+
+
+
+===========================项目集I117==============================
+ElseSentenceBlock->If_N else If_M2 SentenceBlock· ,[id if return while]
+
+
+
