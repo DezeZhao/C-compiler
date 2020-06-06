@@ -1,44 +1,44 @@
 #include "semantic_analyzer.h"
 
 /*
-	³õÊ¼»¯  ´´½¨Á½¸ö±í
+	åˆå§‹åŒ–  åˆ›å»ºä¸¤ä¸ªè¡¨
 */
 SemanticAnalyzer::SemanticAnalyzer() {
 	quadsPrinter.open("gen_data/quads.txt");
-	symbolTables.push_back(SymbolTable(TableType::GLOBAL, "global"));//È«¾Ö·ûºÅ±í [0]
-	symbolTables.push_back(SymbolTable(TableType::TEMPVAR, "temp"));//ÁÙÊ±±äÁ¿·ûºÅ±í [1] //¸¨Öú×÷ÓÃ ²¢ÎŞ±êÊ¶·û¶¨Òå ²»»á¼ÓÔÚdisplay±íÖĞ
-	displayTable.push_back(0);//Ò»¿ªÊ¼·ÖÎöµÄ±í¿Ï¶¨ÊÇÈ«¾Ö·ûºÅ±í(0)
-	nextQuad = 0;//ÏÂÒ»¸öËÄÔªÊ½ĞòºÅ
-	mainFuncLine = -1;// mainº¯ÊıµÄĞĞÊı³õÊ¼»¯Îª-1
+	symbolTables.push_back(SymbolTable(TableType::GLOBAL, "global"));//å…¨å±€ç¬¦å·è¡¨ [0]
+	symbolTables.push_back(SymbolTable(TableType::TEMPVAR, "temp"));//ä¸´æ—¶å˜é‡ç¬¦å·è¡¨ [1] //è¾…åŠ©ä½œç”¨ å¹¶æ— æ ‡è¯†ç¬¦å®šä¹‰ ä¸ä¼šåŠ åœ¨displayè¡¨ä¸­
+	displayTable.push_back(0);//ä¸€å¼€å§‹åˆ†æçš„è¡¨è‚¯å®šæ˜¯å…¨å±€ç¬¦å·è¡¨(0)
+	nextQuad = 0;//ä¸‹ä¸€ä¸ªå››å…ƒå¼åºå·
+	mainFuncLine = -1;// mainå‡½æ•°çš„è¡Œæ•°åˆå§‹åŒ–ä¸º-1
 
-	//Ä¿±ê´úÂëÉú³É ³õÊ¼»¯
+	//ç›®æ ‡ä»£ç ç”Ÿæˆ åˆå§‹åŒ–
 	targetCodeGenerator.getSymbolTables(symbolTables);
 }
 SemanticAnalyzer::~SemanticAnalyzer() {
 	quadsPrinter.close();
 }
 /*
-	µÃµ½ÏÂÒ»¸öËÄÔªÊ½µÄĞòºÅ ´Ó1¿ªÊ¼
+	å¾—åˆ°ä¸‹ä¸€ä¸ªå››å…ƒå¼çš„åºå· ä»1å¼€å§‹
 */
 int SemanticAnalyzer::getNextQuad() {
 	return ++nextQuad;
 }
 string SemanticAnalyzer::getArgName(const Index& idx, bool isReturnVal) {
 	string argName = symbolTables[idx.tableIdx].getVarName(idx.symbolIdx);
-	if (isReturnVal == true) {//ÊÇº¯Êı·µ»ØÖµ
+	if (isReturnVal == true) {//æ˜¯å‡½æ•°è¿”å›å€¼
 		int symbolIdx = symbolTables[0].getSymbolIdx(symbolTables[idx.tableIdx].getName());
 		Symbol& symbol = symbolTables[0].getSymbol(symbolIdx);
-		argName = symbol.varName + "_param_" + to_string(idx.symbolIdx);//º¯ÊıÃû_param_ĞÎ²ÎĞòºÅ
+		argName = symbol.varName + "_param_" + to_string(idx.symbolIdx);//å‡½æ•°å_param_å½¢å‚åºå·
 	}
-	else {//²»ÊÇ
+	else {//ä¸æ˜¯
 		if (SymbolType::VAR == symbolTables[idx.tableIdx].getSymbolType(idx.symbolIdx)) {
-			argName = symbolTables[idx.tableIdx].getName() + "_var_" + argName;//º¯ÊıÃû_var_±äÁ¿Ãû
+			argName = symbolTables[idx.tableIdx].getName() + "_var_" + argName;//å‡½æ•°å_var_å˜é‡å
 		}
 	}
 	return argName;
 }
 /*
-	´òÓ¡ËÄÔªÊ½
+	æ‰“å°å››å…ƒå¼
 */
 void SemanticAnalyzer::printQuads() {
 	for (auto iter = quads.begin(); iter != quads.end(); iter++) {
@@ -48,15 +48,15 @@ void SemanticAnalyzer::printQuads() {
 } 
 
 /*
-	ÔÚËÄÔªÊ½±íÖĞÌí¼ÓËÄÔªÊ½
+	åœ¨å››å…ƒå¼è¡¨ä¸­æ·»åŠ å››å…ƒå¼
 */
 void SemanticAnalyzer::setQuad(const Quad& quad) {
 	quads[quad.idx] = quad;
 }
 
 /*
-	»ØÌîËÄÔªÊ½ ´ËÊ±Ã¿´Î»ØÌîÖµÖ»ÓĞÒ»¸ö µ«ÊÇ»ØÌîËÄÔªÊ½²»Ò»¶¨Ö»ÓĞÒ»¸ö
-	ÕâĞ©´ı»ØÌîËÄÔªÊ½»ØÌîÍ¬Ò»¸öÖµ
+	å›å¡«å››å…ƒå¼ æ­¤æ—¶æ¯æ¬¡å›å¡«å€¼åªæœ‰ä¸€ä¸ª ä½†æ˜¯å›å¡«å››å…ƒå¼ä¸ä¸€å®šåªæœ‰ä¸€ä¸ª
+	è¿™äº›å¾…å›å¡«å››å…ƒå¼å›å¡«åŒä¸€ä¸ªå€¼
 */
 void SemanticAnalyzer::backpatch(const vector<int>& backpatchQuad, int backpatchValue) {
 	for (auto iter = backpatchQuad.begin(); iter != backpatchQuad.end(); iter++) {
@@ -64,49 +64,49 @@ void SemanticAnalyzer::backpatch(const vector<int>& backpatchQuad, int backpatch
 	}
 }
 /*
-	´´½¨Ò»ÕÅxx·ûºÅ±í(º¯Êı·ûºÅ±í)
+	åˆ›å»ºä¸€å¼ xxç¬¦å·è¡¨(å‡½æ•°ç¬¦å·è¡¨)
 */
 void SemanticAnalyzer::createSymbolTable(TableType type, const string& name) {
-	symbolTables.push_back(SymbolTable(type, name));//´´½¨xx·ûºÅ±í
-	int index = symbolTables.size() - 1;//µ±Ç°xx·ûºÅ±íµÄË÷Òı
-	displayTable.push_back(index);//½«µ±Ç°±íË÷Òı¼ÓÈëdisplay±í ±íÊ¾ÏÖÔÚ·ÖÎö¸Ã±í
+	symbolTables.push_back(SymbolTable(type, name));//åˆ›å»ºxxç¬¦å·è¡¨
+	int index = symbolTables.size() - 1;//å½“å‰xxç¬¦å·è¡¨çš„ç´¢å¼•
+	displayTable.push_back(index);//å°†å½“å‰è¡¨ç´¢å¼•åŠ å…¥displayè¡¨ è¡¨ç¤ºç°åœ¨åˆ†æè¯¥è¡¨
 }
 /*
-	Óï·¨·ÖÎö ¹æÔ¼Ê±Ö´ĞĞÓïÒå¼ì²éºÍÊôĞÔ¼ÆËã ·µ»Ø²¼¶ûÖµ
-	Ã¿¸ö²úÉúÊ½Ó¦µ±¶¼ÓĞÓïÒå¶¯×÷  ÎªÁË·½±ãÀí½âºÍ·ÖÎö ´Ó×îºóÒ»¸ö²úÉúÊ½½øĞĞ·ÖÎö
+	è¯­æ³•åˆ†æ è§„çº¦æ—¶æ‰§è¡Œè¯­ä¹‰æ£€æŸ¥å’Œå±æ€§è®¡ç®— è¿”å›å¸ƒå°”å€¼
+	æ¯ä¸ªäº§ç”Ÿå¼åº”å½“éƒ½æœ‰è¯­ä¹‰åŠ¨ä½œ  ä¸ºäº†æ–¹ä¾¿ç†è§£å’Œåˆ†æ ä»æœ€åä¸€ä¸ªäº§ç”Ÿå¼è¿›è¡Œåˆ†æ
 */
 bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrStack, const Production& prod) {
 	GrammarSymbol symbol;
 	if (prod.left == "ConstValue") {//ConstValue->const_int|const_float|const_char
-		//´ËÊ±ÒªÎª²úÉúÊ½×ó±ßµÄ·ÇÖÕ½á·û´´½¨Ò»¸öÊôĞÔ
-		GrammarSymbol const_int = grammarSymbolAttrStack.back();//È¡ÎÄ·¨·ûºÅÊôĞÔÕ»Õ»¶¥ÔªËØ
+		//æ­¤æ—¶è¦ä¸ºäº§ç”Ÿå¼å·¦è¾¹çš„éç»ˆç»“ç¬¦åˆ›å»ºä¸€ä¸ªå±æ€§
+		GrammarSymbol const_int = grammarSymbolAttrStack.back();//å–æ–‡æ³•ç¬¦å·å±æ€§æ ˆæ ˆé¡¶å…ƒç´ 
 
 		symbol.name = prod.left;
 		symbol.value = const_int.value;
 	}
 	else if (prod.left == "Factor" && prod.right[0] == "ConstValue") {//ConstValuector->ConstValue
-		//´Ë´¦ĞèÒª´´½¨ÁÙÊ±±äÁ¿ ²¢½«Æä¼ÓÈëÁÙÊ±±äÁ¿·ûºÅ±í
-		//´ËÊ±ÒªÎª²úÉúÊ½×ó±ßµÄ·ÇÖÕ½á·û´´½¨Ò»¸öÊôĞÔ
-		GrammarSymbol constValue = grammarSymbolAttrStack.back();//È¡ÎÄ·¨·ûºÅÊôĞÔÕ»Õ»¶¥ÔªËØ
+		//æ­¤å¤„éœ€è¦åˆ›å»ºä¸´æ—¶å˜é‡ å¹¶å°†å…¶åŠ å…¥ä¸´æ—¶å˜é‡ç¬¦å·è¡¨
+		//æ­¤æ—¶è¦ä¸ºäº§ç”Ÿå¼å·¦è¾¹çš„éç»ˆç»“ç¬¦åˆ›å»ºä¸€ä¸ªå±æ€§
+		GrammarSymbol constValue = grammarSymbolAttrStack.back();//å–æ–‡æ³•ç¬¦å·å±æ€§æ ˆæ ˆé¡¶å…ƒç´ 
 
 		symbol.name = prod.left;
 		//symbol.value = T_x=varName
-		//ÉêÇëÁÙÊ±±äÁ¿
-		int symbolIdx = symbolTables[1].setSymbol(constValue.value);//ÔÚÁÙÊ±±äÁ¿±íÖĞ¼ÓÈëÁÙÊ±±äÁ¿²¢·µ»ØË÷Òı
-		string varName = symbolTables[1].getVarName(symbolIdx);//µÃµ½ÁÙÊ±±äÁ¿Ãû
+		//ç”³è¯·ä¸´æ—¶å˜é‡
+		int symbolIdx = symbolTables[1].setSymbol(constValue.value);//åœ¨ä¸´æ—¶å˜é‡è¡¨ä¸­åŠ å…¥ä¸´æ—¶å˜é‡å¹¶è¿”å›ç´¢å¼•
+		string varName = symbolTables[1].getVarName(symbolIdx);//å¾—åˆ°ä¸´æ—¶å˜é‡å
 		symbol.value = varName;
 		symbol.idx.tableIdx = 1;
 		symbol.idx.symbolIdx = symbolIdx;
 
-		//´Ë´¦ĞèÒªÉú³ÉÒ»¸öËÄÔªÊ½
+		//æ­¤å¤„éœ€è¦ç”Ÿæˆä¸€ä¸ªå››å…ƒå¼
 		setQuad(Quad{ getNextQuad(),":=",constValue.value,"-",varName });
 
-		//Ä¿±ê´úÂë ³£Á¿¸³ÖµÖ¸Áî(addi $ti,$0,imm)
+		//ç›®æ ‡ä»£ç  å¸¸é‡èµ‹å€¼æŒ‡ä»¤(addi $ti,$0,imm)
 		targetCodeGenerator.addiImmToReg(constValue.value, symbol.idx);
 	}
 	else if (prod.left == "Factor" && prod.right[0] == "(") {//Factor->( Expression ) 
-		//ExpressionµÄvalueÊôĞÔ¡¢IndexÊôĞÔ¸³¸øFactor
-		//´ËÊ±ÒªÎª²úÉúÊ½×ó±ßµÄ·ÇÖÕ½á·û´´½¨Ò»¸öÊôĞÔ
+		//Expressionçš„valueå±æ€§ã€Indexå±æ€§èµ‹ç»™Factor
+		//æ­¤æ—¶è¦ä¸ºäº§ç”Ÿå¼å·¦è¾¹çš„éç»ˆç»“ç¬¦åˆ›å»ºä¸€ä¸ªå±æ€§
 		GrammarSymbol expression = grammarSymbolAttrStack[grammarSymbolAttrStack.size() - 1 - 1];//Expression
 
 		symbol.name = prod.left;
@@ -114,19 +114,19 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 		symbol.idx = expression.idx;
 	}
 	else if (prod.left == "Factor" && prod.right[0] == "id") {//Factor->id FTYPE
-		//Åöµ½±êÊ¶·ûidÔòĞèÒª½øĞĞ¼ì²é ¿´ËüÊÇ·ñ¶¨Òå
-		//»¹Òª·ÖÎöFTYPE->CallFunction|$ ¿´ftypeÊÇÓÉÄÄ¸ö²úÉúÊ½¹æÔ¼À´µÄ
+		//ç¢°åˆ°æ ‡è¯†ç¬¦idåˆ™éœ€è¦è¿›è¡Œæ£€æŸ¥ çœ‹å®ƒæ˜¯å¦å®šä¹‰
+		//è¿˜è¦åˆ†æFTYPE->CallFunction|$ çœ‹ftypeæ˜¯ç”±å“ªä¸ªäº§ç”Ÿå¼è§„çº¦æ¥çš„
 		GrammarSymbol ftype = grammarSymbolAttrStack.back();
-		GrammarSymbol& id = grammarSymbolAttrStack[grammarSymbolAttrStack.size() - 1 - 1];//´Ë´¦±ØĞëÊÇÒıÓÃ ĞèÒªĞŞ¸ÄÖµ
+		GrammarSymbol& id = grammarSymbolAttrStack[grammarSymbolAttrStack.size() - 1 - 1];//æ­¤å¤„å¿…é¡»æ˜¯å¼•ç”¨ éœ€è¦ä¿®æ”¹å€¼
 
 		symbol.name = prod.left;
 
-		//´Óµ±Ç°º¯Êı¶¨ÒåÓò¿ªÊ¼¼ì²é ¿´ÊÇ·ñ¶¨Òå¹ı¸Ã±äÁ¿
+		//ä»å½“å‰å‡½æ•°å®šä¹‰åŸŸå¼€å§‹æ£€æŸ¥ çœ‹æ˜¯å¦å®šä¹‰è¿‡è¯¥å˜é‡
 		int idx = -1;
-		for (auto iter = displayTable.rbegin(); iter != displayTable.rend(); ++iter) {//display±íÊÇxx·ûºÅ±íµÄË÷Òı
-			SymbolTable st = symbolTables[*iter];//µÃµ½xx·ûºÅ±í
-			idx = st.getSymbolIdx(id.value);//Í¨¹ıÎÄ·¨·ûºÅÖµÔÚ·ûºÅ±íÖĞ²éÕÒÆäË÷Òı
-			if (idx != -1) {//ÕÒµ½ÁË
+		for (auto iter = displayTable.rbegin(); iter != displayTable.rend(); ++iter) {//displayè¡¨æ˜¯xxç¬¦å·è¡¨çš„ç´¢å¼•
+			SymbolTable st = symbolTables[*iter];//å¾—åˆ°xxç¬¦å·è¡¨
+			idx = st.getSymbolIdx(id.value);//é€šè¿‡æ–‡æ³•ç¬¦å·å€¼åœ¨ç¬¦å·è¡¨ä¸­æŸ¥æ‰¾å…¶ç´¢å¼•
+			if (idx != -1) {//æ‰¾åˆ°äº†
 				id.idx.tableIdx = *iter;
 				id.idx.symbolIdx = idx;
 				break;
@@ -135,88 +135,88 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 		if (idx == -1) {
 			cerr << "Semantic Analysis ERROR!" << endl;
 			cerr << "Identifier " << id.value << " was not defined! Please check if you have defined it!" << endl;
-			return false;//±¨´í
+			return false;//æŠ¥é”™
 		}
 
-		//±êÊ¶·ûÒÑ¾­¶¨Òå,¼ì²éÊÇº¯ÊıÃû»¹ÊÇ±äÁ¿Ãû
-		if (ftype.value == "") {//±äÁ¿Ãû  FTYPE->$ => Factor->id
-			//¼ì²éidÊÇ·ñÊÇÁÙÊ±±äÁ¿ Í¨¹ıËùÔÚ±íË÷ÒıÕÒµ½¸Ã·ûºÅÀàĞÍ
-			if (symbolTables[id.idx.tableIdx].getSymbolType(id.idx.symbolIdx) == SymbolType::TEMP_VAR) {//ÊÇÁÙÊ±±äÁ¿
-				symbol.value = symbolTables[1].getVarName(id.idx.symbolIdx);//ÔÚÁÙÊ±±äÁ¿±íÖĞÕÒµ½ÆäÃû×Ö
+		//æ ‡è¯†ç¬¦å·²ç»å®šä¹‰,æ£€æŸ¥æ˜¯å‡½æ•°åè¿˜æ˜¯å˜é‡å
+		if (ftype.value == "") {//å˜é‡å  FTYPE->$ => Factor->id
+			//æ£€æŸ¥idæ˜¯å¦æ˜¯ä¸´æ—¶å˜é‡ é€šè¿‡æ‰€åœ¨è¡¨ç´¢å¼•æ‰¾åˆ°è¯¥ç¬¦å·ç±»å‹
+			if (symbolTables[id.idx.tableIdx].getSymbolType(id.idx.symbolIdx) == SymbolType::TEMP_VAR) {//æ˜¯ä¸´æ—¶å˜é‡
+				symbol.value = symbolTables[1].getVarName(id.idx.symbolIdx);//åœ¨ä¸´æ—¶å˜é‡è¡¨ä¸­æ‰¾åˆ°å…¶åå­—
 				symbol.idx = id.idx;
 			}
-			else {//²»ÊÇÁÙÊ±±äÁ¿
-				//ÉêÇëÁÙÊ±±äÁ¿
-				int symbolIdx = symbolTables[1].setSymbol(id.value);//ÔÚÁÙÊ±±äÁ¿±íÖĞ¼ÓÈëÁÙÊ±±äÁ¿²¢·µ»ØË÷Òı
-				string varName = symbolTables[1].getVarName(symbolIdx);//µÃµ½ÁÙÊ±±äÁ¿Ãû
+			else {//ä¸æ˜¯ä¸´æ—¶å˜é‡
+				//ç”³è¯·ä¸´æ—¶å˜é‡
+				int symbolIdx = symbolTables[1].setSymbol(id.value);//åœ¨ä¸´æ—¶å˜é‡è¡¨ä¸­åŠ å…¥ä¸´æ—¶å˜é‡å¹¶è¿”å›ç´¢å¼•
+				string varName = symbolTables[1].getVarName(symbolIdx);//å¾—åˆ°ä¸´æ—¶å˜é‡å
 				symbol.value = varName;
 				symbol.idx = { 1,symbolIdx };
 
-				//´Ë´¦ĞèÒªÉú³ÉÒ»¸öËÄÔªÊ½ varName = getArgName()
+				//æ­¤å¤„éœ€è¦ç”Ÿæˆä¸€ä¸ªå››å…ƒå¼ varName = getArgName()
 				setQuad(Quad{ getNextQuad(),":=",getArgName(id.idx),"-",varName });
 
-				//Ä¿±ê´úÂë ¸³ÖµÖ¸Áî(add $t1,$t2,$0) 
-				//$t1ÎªÉêÇëµÄÁÙÊ±±äÁ¿ $2ÎªÍ¨¹ıË÷Òı²éÕÒ·ûºÅ±í ·ûºÅ ÕÒµ½µÄ¼Ä´æÆ÷
-				//(¼Ä´æÆ÷¿ÉÄÜÒÑ¾­ÓĞÖµÁË ÈôÃ»Öµ·ûºÅµÄregIdxÊôĞÔ=-1 ĞèÒªÔÚÄÚ´æÖĞ¿ª±Ù¿Õ¼ä ²¢½«Öµ¸³¸øÁÙÊ±±äÁ¿)
+				//ç›®æ ‡ä»£ç  èµ‹å€¼æŒ‡ä»¤(add $t1,$t2,$0) 
+				//$t1ä¸ºç”³è¯·çš„ä¸´æ—¶å˜é‡ $2ä¸ºé€šè¿‡ç´¢å¼•æŸ¥æ‰¾ç¬¦å·è¡¨ ç¬¦å· æ‰¾åˆ°çš„å¯„å­˜å™¨
+				//(å¯„å­˜å™¨å¯èƒ½å·²ç»æœ‰å€¼äº† è‹¥æ²¡å€¼ç¬¦å·çš„regIdxå±æ€§=-1 éœ€è¦åœ¨å†…å­˜ä¸­å¼€è¾Ÿç©ºé—´ å¹¶å°†å€¼èµ‹ç»™ä¸´æ—¶å˜é‡)
 				string rs = targetCodeGenerator.getOperand(symbol.idx);
 				string rt = targetCodeGenerator.getOperand(id.idx);
 
 				targetCodeGenerator.setInstruction({ "add",rs,rt,"$0" });
 			}
 		}
-		else {//FTYPE->CallFunction  => Factor->id CallFunction //º¯ÊıÃû
-			//ÉêÇëÁÙÊ±±äÁ¿ ÓÃ¸ÃÁÙÊ±±äÁ¿´æ´¢º¯Êı·µ»ØÖµ
+		else {//FTYPE->CallFunction  => Factor->id CallFunction //å‡½æ•°å
+			//ç”³è¯·ä¸´æ—¶å˜é‡ ç”¨è¯¥ä¸´æ—¶å˜é‡å­˜å‚¨å‡½æ•°è¿”å›å€¼
 			int symbolIdx = symbolTables[1].setSymbol(id.value);
 			string varName = symbolTables[1].getVarName(symbolIdx);
-			//µÃµ½µ±Ç°º¯Êı·µ»ØÖµ
-			int tableIdx = symbolTables[id.idx.tableIdx].getSymbol(id.idx.symbolIdx).funcTableIdx;//º¯Êı·ûºÅ±íµÄË÷Òı
-			Index idx = { tableIdx, 0 };//·µ»ØÖµ´æ·ÅÔÚº¯Êı·ûºÅ±íµÄ0Ë÷Òı
+			//å¾—åˆ°å½“å‰å‡½æ•°è¿”å›å€¼
+			int tableIdx = symbolTables[id.idx.tableIdx].getSymbol(id.idx.symbolIdx).funcTableIdx;//å‡½æ•°ç¬¦å·è¡¨çš„ç´¢å¼•
+			Index idx = { tableIdx, 0 };//è¿”å›å€¼å­˜æ”¾åœ¨å‡½æ•°ç¬¦å·è¡¨çš„0ç´¢å¼•
 
-			//´Ë´¦ĞèÒªÉú³ÉÒ»¸öËÄÔªÊ½
-			//½«º¯Êı·µ»ØÖµ´æÔÚÁÙÊ±±äÁ¿
+			//æ­¤å¤„éœ€è¦ç”Ÿæˆä¸€ä¸ªå››å…ƒå¼
+			//å°†å‡½æ•°è¿”å›å€¼å­˜åœ¨ä¸´æ—¶å˜é‡
 			setQuad(Quad{ getNextQuad(),":=",getArgName(idx),"-",varName });
 
 			symbol.value = "";
-			symbol.idx = { 1,symbolIdx };//´æµ½ÁÙÊ±±äÁ¿±í
+			symbol.idx = { 1,symbolIdx };//å­˜åˆ°ä¸´æ—¶å˜é‡è¡¨
 
-			//Ä¿±ê´úÂë 
-			//º¯Êıµ÷ÓÃÇ°ĞèÒªÇåÀí¼Ä´æÆ÷
+			//ç›®æ ‡ä»£ç  
+			//å‡½æ•°è°ƒç”¨å‰éœ€è¦æ¸…ç†å¯„å­˜å™¨
 			targetCodeGenerator.clearRegs();
-			//Éú³Éµ÷ÓÃº¯ÊıÖ¸Áî
+			//ç”Ÿæˆè°ƒç”¨å‡½æ•°æŒ‡ä»¤
 			targetCodeGenerator.setInstruction({"jal","","",id.value});
-			//´Óº¯Êıµ÷ÓÃ·µ»Ø µ÷Õûfp sp Ö¸Õë
-			//spÖ¸Ïòfp
+			//ä»å‡½æ•°è°ƒç”¨è¿”å› è°ƒæ•´fp sp æŒ‡é’ˆ
+			//spæŒ‡å‘fp
 			targetCodeGenerator.setInstruction({ "add","$sp","$fp","$0" });
-			//fp Ö¸ÏòÀÏfp ÓÉÓÚÔÚ´´½¨»î¶¯¼ÇÂ¼Ê± ½«ÀÏ$fpµÄÖµ´æÔÚµØÖ·Îª$spµÄÄÚ´æÖĞ  ÔÚ½«ĞÂµÄfpÖ¸Ïòsp
-			//¹Ê ($fp)´ú±íµÄµØÖ·¾ÍÊÇ»î¶¯¼ÇÂ¼´´½¨Ê±$spµÄÖµ ÄÇÃ´ÀÏµÄfp¾Í±»´æÔÚ($fp)ÖĞ
+			//fp æŒ‡å‘è€fp ç”±äºåœ¨åˆ›å»ºæ´»åŠ¨è®°å½•æ—¶ å°†è€$fpçš„å€¼å­˜åœ¨åœ°å€ä¸º$spçš„å†…å­˜ä¸­  åœ¨å°†æ–°çš„fpæŒ‡å‘sp
+			//æ•… ($fp)ä»£è¡¨çš„åœ°å€å°±æ˜¯æ´»åŠ¨è®°å½•åˆ›å»ºæ—¶$spçš„å€¼ é‚£ä¹ˆè€çš„fpå°±è¢«å­˜åœ¨($fp)ä¸­
 			targetCodeGenerator.setInstruction({ "lw","$fp","($fp)","" });
-			//$spÖ¸ÕëĞèÒª»ØÍË 
+			//$spæŒ‡é’ˆéœ€è¦å›é€€ 
 			int paraNum = symbolTables[0].getSymbol(id.idx.symbolIdx).formalParaNum;
 			targetCodeGenerator.incStackPointer(-1 * paraNum);
 
-			//´Ë´¦ĞèÒª×¢Òâ ÊÇº¯Êıµ÷ÓÃ ĞèÒª½«º¯Êı·µ»ØÖµ´æÔÚ$v0(or $v1)
+			//æ­¤å¤„éœ€è¦æ³¨æ„ æ˜¯å‡½æ•°è°ƒç”¨ éœ€è¦å°†å‡½æ•°è¿”å›å€¼å­˜åœ¨$v0(or $v1)
 			string rs = targetCodeGenerator.getOperand(symbol.idx);
 
 			targetCodeGenerator.setInstruction({ "add",rs,"$v0","$0" });
 		}
 	}
 	else if (prod.left == "FactorLoop" && prod.right[0] == "FactorLoop") {//FactorLoop->FactorLoop Factor *|FactorLoop Factor /
-		//´Ë´¦ĞèÒªÎªFactor´´½¨ÁÙÊ±±äÁ¿´æÆğÀ´
-		//´ËÊ±ÒªÎª²úÉúÊ½×ó±ßµÄ·ÇÖÕ½á·û´´½¨Ò»¸öÊôĞÔ
+		//æ­¤å¤„éœ€è¦ä¸ºFactoråˆ›å»ºä¸´æ—¶å˜é‡å­˜èµ·æ¥
+		//æ­¤æ—¶è¦ä¸ºäº§ç”Ÿå¼å·¦è¾¹çš„éç»ˆç»“ç¬¦åˆ›å»ºä¸€ä¸ªå±æ€§
 		GrammarSymbol factor = grammarSymbolAttrStack[grammarSymbolAttrStack.size() - 1 - 1];
 		GrammarSymbol factorLoop = grammarSymbolAttrStack[grammarSymbolAttrStack.size() - 1 - 2];
 
 		symbol.name = prod.left;
 
 		if (factorLoop.value == "") {//FactorLoop->$ ==> FactorLoop->Factor *
-			//´Ë´¦²»ĞèÒªÉêÇëÁÙÊ±±äÁ¿ Ö»Ğè½« ÊôĞÔÕ»¶¥µÄ* /¸³¸øvalue¼´¿É
-			//FactorµÄÖµÒÑ¾­ÊÇÁÙÊ±±äÁ¿ÁË Ö»Ğè½«FactorÀïÃæµÄÁÙÊ±±äÁ¿µÄ ±íºÍ·ûºÅË÷Òı¸³¸øidx¼´¿É
+			//æ­¤å¤„ä¸éœ€è¦ç”³è¯·ä¸´æ—¶å˜é‡ åªéœ€å°† å±æ€§æ ˆé¡¶çš„* /èµ‹ç»™valueå³å¯
+			//Factorçš„å€¼å·²ç»æ˜¯ä¸´æ—¶å˜é‡äº† åªéœ€å°†Factoré‡Œé¢çš„ä¸´æ—¶å˜é‡çš„ è¡¨å’Œç¬¦å·ç´¢å¼•èµ‹ç»™idxå³å¯
 			symbol.value = grammarSymbolAttrStack.back().name;//* /
 			symbol.idx = factor.idx;
 		}
 		else {//FactorLoop->FactorLoop Factor *|FactorLoop Factor /
-			//FactorLoop = Factor * ´æµÄÖµÊÇÁÙÊ±±äÁ¿
-			//´ËÊ±ĞèÒª¼ÆËã FactorLoop ÀïÃæµÄÖµ1 ºÍ FactorÀïÃæµÄÖµ2  ³Ë³ı½á¹û
+			//FactorLoop = Factor * å­˜çš„å€¼æ˜¯ä¸´æ—¶å˜é‡
+			//æ­¤æ—¶éœ€è¦è®¡ç®— FactorLoop é‡Œé¢çš„å€¼1 å’Œ Factoré‡Œé¢çš„å€¼2  ä¹˜é™¤ç»“æœ
 			string arg1 = getArgName(factorLoop.idx);
 			string arg2 = getArgName(factor.idx);
 
@@ -225,17 +225,17 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 
 			int  nextQuad = getNextQuad();
 			if (factorLoop.value == "*") {
-				//Éú³É¼ÆËãËÄÔªÊ½
+				//ç”Ÿæˆè®¡ç®—å››å…ƒå¼
 				setQuad(Quad{ nextQuad,"*",arg1,arg2,arg1 });//arg1 = arg1*arg2
-				//Ä¿±ê´úÂë ³Ë·¨Ö¸Áî(mult rs,rt mflo rs)
+				//ç›®æ ‡ä»£ç  ä¹˜æ³•æŒ‡ä»¤(mult rs,rt mflo rs)
 				targetCodeGenerator.setInstruction({ "mult",rs, rt,"" });
-				targetCodeGenerator.setInstruction({ "mflo",rs,"","" });//È¡µÍ32Î»
+				targetCodeGenerator.setInstruction({ "mflo",rs,"","" });//å–ä½32ä½
 			}
 			else if (factorLoop.value == "/") {
 				setQuad(Quad{ nextQuad,"/",arg1,arg2,arg1 });//arg1 = arg1/arg2
-				//Ä¿±ê´úÂë ³ı·¨Ö¸Áî(div rs,rt mflo rs) 
+				//ç›®æ ‡ä»£ç  é™¤æ³•æŒ‡ä»¤(div rs,rt mflo rs) 
 				targetCodeGenerator.setInstruction({ "div",rs,rt,"" });
-				targetCodeGenerator.setInstruction({ "mflo",rs,"","" });//È¡µÍ32Î»
+				targetCodeGenerator.setInstruction({ "mflo",rs,"","" });//å–ä½32ä½
 			}
 			symbol.value = factorLoop.value;// * /
 			symbol.idx = factorLoop.idx;
@@ -246,16 +246,16 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 		GrammarSymbol factor = grammarSymbolAttrStack.back();
 
 		symbol.name = prod.left;
-		//ÅĞ¶ÏFactorLoopÊÇ·ñÎª¿Õ
+		//åˆ¤æ–­FactorLoopæ˜¯å¦ä¸ºç©º
 		if (factorLoop.value == "") {//FactorLoop->$ =>Item -> Factor
-			//´Ë´¦ÎŞĞèÉêÇëÁÙÊ±±äÁ¿ Ö±½Ó½«FactorµÄÁÙÊ±±äÁ¿Öµ´«¸øItem¼´¿É(ÁÙÊ±±äÁ¿´«ÖµÖ»Ğè´«±íºÍ·ûºÅË÷Òı¼´¿É)
+			//æ­¤å¤„æ— éœ€ç”³è¯·ä¸´æ—¶å˜é‡ ç›´æ¥å°†Factorçš„ä¸´æ—¶å˜é‡å€¼ä¼ ç»™Itemå³å¯(ä¸´æ—¶å˜é‡ä¼ å€¼åªéœ€ä¼ è¡¨å’Œç¬¦å·ç´¢å¼•å³å¯)
 			symbol.value = "";
 			symbol.idx = factor.idx;
 		}
-		else {//FactorLoop²»¿Õ
-			//FactorLoopÖĞµÄ Factor ÁÙÊ±±äÁ¿Öµ 
-			//Factor ÖĞµÄ ÁÙÊ±±äÁ¿Öµ
-			//¸ù¾İFactorLoop.value = */ ½øĞĞÔËËã ×îºó»¹Òª´æÔÚarg1ÖĞ
+		else {//FactorLoopä¸ç©º
+			//FactorLoopä¸­çš„ Factor ä¸´æ—¶å˜é‡å€¼ 
+			//Factor ä¸­çš„ ä¸´æ—¶å˜é‡å€¼
+			//æ ¹æ®FactorLoop.value = */ è¿›è¡Œè¿ç®— æœ€åè¿˜è¦å­˜åœ¨arg1ä¸­
 			string arg1 = getArgName(factorLoop.idx);
 			string arg2 = getArgName(factor.idx);
 
@@ -264,20 +264,20 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 
 			int  nextQuad = getNextQuad();
 			if (factorLoop.value == "*") {
-				//Éú³É¼ÆËãËÄÔªÊ½
+				//ç”Ÿæˆè®¡ç®—å››å…ƒå¼
 				setQuad(Quad{ nextQuad,"*",arg1,arg2,arg1 });//arg1 = arg1*arg2
-				//Ä¿±ê´úÂë ³Ë·¨Ö¸Áî(mult rs,rt mflo rs)
+				//ç›®æ ‡ä»£ç  ä¹˜æ³•æŒ‡ä»¤(mult rs,rt mflo rs)
 				targetCodeGenerator.setInstruction({ "mult",rs, rt,"" });
-				targetCodeGenerator.setInstruction({ "mflo",rs,"","" });//È¡µÍ32Î»
+				targetCodeGenerator.setInstruction({ "mflo",rs,"","" });//å–ä½32ä½
 			}
 			else if (factorLoop.value == "/") {
 				setQuad(Quad{ nextQuad,"/",arg1,arg2,arg1 });//arg1 = arg1/arg2
-				//Ä¿±ê´úÂë ³ı·¨Ö¸Áî(div rs,rt mflo rs) 
+				//ç›®æ ‡ä»£ç  é™¤æ³•æŒ‡ä»¤(div rs,rt mflo rs) 
 				targetCodeGenerator.setInstruction({ "div",rs,rt,"" });
-				targetCodeGenerator.setInstruction({ "mflo",rs,"","" });//È¡µÍ32Î»
+				targetCodeGenerator.setInstruction({ "mflo",rs,"","" });//å–ä½32ä½
 
 			}
-			//½«¼ÆËãÖµ´æÔÚItemÖĞ
+			//å°†è®¡ç®—å€¼å­˜åœ¨Itemä¸­
 			symbol.value = factorLoop.value;// * /
 			symbol.idx = factorLoop.idx;
 		}
@@ -287,7 +287,7 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 		GrammarSymbol item = grammarSymbolAttrStack[grammarSymbolAttrStack.size() - 1 - 1];
 
 		symbol.name = prod.left;
-		//ÅĞ¶¨ItemLoopÊÇ·ñÎª¿Õ
+		//åˆ¤å®šItemLoopæ˜¯å¦ä¸ºç©º
 		if (itemLoop.value == "") {//ItemLoop->$  ItemLoop->Item
 			symbol.value = grammarSymbolAttrStack.back().name;//+ -
 			symbol.idx = item.idx;
@@ -301,15 +301,15 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 
 			int  nextQuad = getNextQuad();
 			if (itemLoop.value == "+") {
-				//Éú³É¼ÆËãËÄÔªÊ½
+				//ç”Ÿæˆè®¡ç®—å››å…ƒå¼
 				setQuad(Quad{ nextQuad,"+",arg1,arg2,arg1 });//arg1 = arg1+arg2
-				//Ä¿±ê´úÂë ¼Ó·¨Ö¸Áî(add rs,rt,rd)(rs = rt+rd)
+				//ç›®æ ‡ä»£ç  åŠ æ³•æŒ‡ä»¤(add rs,rt,rd)(rs = rt+rd)
 				targetCodeGenerator.setInstruction({ "add",rs,rs,rt });
 			}
 			else if (itemLoop.value == "-") {
-				//Éú³É¼ÆËãËÄÔªÊ½
+				//ç”Ÿæˆè®¡ç®—å››å…ƒå¼
 				setQuad(Quad{ nextQuad,"-",arg1,arg2,arg1 });//arg1 = arg1-arg2
-				//Ä¿±ê´úÂë ¼õ·¨Ö¸Áî(sub rs,rt,rd)(rs = rt-rd)
+				//ç›®æ ‡ä»£ç  å‡æ³•æŒ‡ä»¤(sub rs,rt,rd)(rs = rt-rd)
 				targetCodeGenerator.setInstruction({ "sub",rs,rs,rt });
 
 			}
@@ -322,17 +322,17 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 		GrammarSymbol item = grammarSymbolAttrStack.back();
 
 		symbol.name = prod.left;
-		//ÅĞ¶ÏItemLoopÊÇ·ñÎª¿Õ
+		//åˆ¤æ–­ItemLoopæ˜¯å¦ä¸ºç©º
 		if (itemLoop.value == "") {//AddExpression->Item
-			//Ö±½Ó´«µİÁÙÊ±±äÁ¿¼´¿É
-			//´Ë´¦ÎŞĞèÉêÇëÁÙÊ±±äÁ¿ Ö±½Ó½«ItemµÄÁÙÊ±±äÁ¿Öµ´«¸øAddExpression¼´¿É(ÁÙÊ±±äÁ¿´«ÖµÖ»Ğè´«±íºÍ·ûºÅË÷Òı)
+			//ç›´æ¥ä¼ é€’ä¸´æ—¶å˜é‡å³å¯
+			//æ­¤å¤„æ— éœ€ç”³è¯·ä¸´æ—¶å˜é‡ ç›´æ¥å°†Itemçš„ä¸´æ—¶å˜é‡å€¼ä¼ ç»™AddExpressionå³å¯(ä¸´æ—¶å˜é‡ä¼ å€¼åªéœ€ä¼ è¡¨å’Œç¬¦å·ç´¢å¼•)
 			symbol.value = "";
 			symbol.idx = item.idx;
 		}
-		else {//ItemLoop²»¿Õ
-		//ItemLoopÖĞµÄ Item ÁÙÊ±±äÁ¿Öµ 
-		//Item ÖĞµÄ ÁÙÊ±±äÁ¿Öµ
-		//¸ù¾İItemLoop.value = +- ½øĞĞÔËËã ×îºó»¹Òª´æÔÚarg1ÖĞ
+		else {//ItemLoopä¸ç©º
+		//ItemLoopä¸­çš„ Item ä¸´æ—¶å˜é‡å€¼ 
+		//Item ä¸­çš„ ä¸´æ—¶å˜é‡å€¼
+		//æ ¹æ®ItemLoop.value = +- è¿›è¡Œè¿ç®— æœ€åè¿˜è¦å­˜åœ¨arg1ä¸­
 			string arg1 = getArgName(itemLoop.idx);
 			string arg2 = getArgName(item.idx);
 
@@ -341,14 +341,14 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 
 			int  nextQuad = getNextQuad();
 			if (itemLoop.value == "+") {
-				//Éú³É¼ÆËãËÄÔªÊ½
+				//ç”Ÿæˆè®¡ç®—å››å…ƒå¼
 				setQuad(Quad{ nextQuad,"+",arg1,arg2,arg1 });//arg1 = arg1+arg2
-				//Ä¿±ê´úÂë ¼Ó·¨Ö¸Áî(add rs,rt,rd)(rs = rt+rd)
+				//ç›®æ ‡ä»£ç  åŠ æ³•æŒ‡ä»¤(add rs,rt,rd)(rs = rt+rd)
 				targetCodeGenerator.setInstruction({ "add",rs,rs,rt });
 			}
 			else if (itemLoop.value == "-") {
 				setQuad(Quad{ nextQuad ,"-",arg1,arg2,arg1 });//arg1 = arg1-arg2
-				//Ä¿±ê´úÂë ¼õ·¨Ö¸Áî(sub rs,rt,rd)(rs = rt-rd)
+				//ç›®æ ‡ä»£ç  å‡æ³•æŒ‡ä»¤(sub rs,rt,rd)(rs = rt-rd)
 				targetCodeGenerator.setInstruction({ "sub",rs,rs,rt });
 			}
 			symbol.value = itemLoop.value;// + -
@@ -362,17 +362,17 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 		symbol.name = prod.left;
 
 		if (addExpressionLoop.value == "") {//AddExpressionLoop->$ ==>AddExpressionLoop->AddExpression Relop
-			//ÎŞĞè´´½¨ÁÙÊ±±äÁ¿ Ö±½Ó½«ÆäAddExpressionµÄÖµ½øĞĞ´«µİ
+			//æ— éœ€åˆ›å»ºä¸´æ—¶å˜é‡ ç›´æ¥å°†å…¶AddExpressionçš„å€¼è¿›è¡Œä¼ é€’
 			symbol.value = grammarSymbolAttrStack.back().value;//> < >= <= ....
 			symbol.idx = addExpression.idx;
 		}
 		else {//AddExpressionLoop->AddExpressionLoop AddExpression Relop
-			//´Ë´¦ĞèÒªÉú³ÉËÄÔªÊ½
+			//æ­¤å¤„éœ€è¦ç”Ÿæˆå››å…ƒå¼
 			/*
-			ËÄÔªÊ½µÄÉú³É¹æÔòÈçÏÂ£º
+			å››å…ƒå¼çš„ç”Ÿæˆè§„åˆ™å¦‚ä¸‹ï¼š
 				nextquad (jop,X1,X2, 0); trueList
 				nextquad+1 (j  ,- ,- , 0); falseList
-			´Ë´¦ÊÇ´ı»ØÌîµÄËÄÔªÊ½
+			æ­¤å¤„æ˜¯å¾…å›å¡«çš„å››å…ƒå¼
 			*/
 			string arg1 = getArgName(addExpressionLoop.idx);
 			string arg2 = getArgName(addExpression.idx);
@@ -380,14 +380,14 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 			string rs = targetCodeGenerator.getOperand(addExpressionLoop.idx);
 			string rt = targetCodeGenerator.getOperand(addExpression.idx);
 
-			//ËÄÔªÊ½
+			//å››å…ƒå¼
 			int nextQuadTrue = getNextQuad();
 			symbol.trueList.push_back(nextQuadTrue);
-			setQuad(Quad{ nextQuadTrue,"j" + addExpressionLoop.value,arg1,arg2,"0" });//Õæ³ö¿Ú
+			setQuad(Quad{ nextQuadTrue,"j" + addExpressionLoop.value,arg1,arg2,"0" });//çœŸå‡ºå£
 
-			//Ä¿±ê´úÂë ±È½ÏÌø×ªÖ¸Áî ¼´£¨cmp rs,rt,branchLabel£©
+			//ç›®æ ‡ä»£ç  æ¯”è¾ƒè·³è½¬æŒ‡ä»¤ å³ï¼ˆcmp rs,rt,branchLabelï¼‰
 			int inst;
-			if (addExpressionLoop.value == ">") {//branchLabel ÏÈ¿Õ×Å  Ö®ºóĞèÒª»ØÌî
+			if (addExpressionLoop.value == ">") {//branchLabel å…ˆç©ºç€  ä¹‹åéœ€è¦å›å¡«
 				inst = targetCodeGenerator.setInstruction({ "bgt",rs,rt, "" });
 			}
 			else if (addExpressionLoop.value == ">=") {
@@ -405,15 +405,15 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 			else if (addExpressionLoop.value == "!=") {
 				inst = targetCodeGenerator.setInstruction({ "bne",rs,rt,"" });
 			}
-			//Õæ³ö¿ÚÖ¸Áî  ´ı»ØÌî
+			//çœŸå‡ºå£æŒ‡ä»¤  å¾…å›å¡«
 			symbol.trueLabel.push_back(inst);
 
 
 			int nextQuadFalse = getNextQuad();
 			symbol.falseList.push_back(nextQuadFalse);
-			setQuad(Quad{ nextQuadFalse,"j","-","-","0" });//¼Ù³ö¿Ú
+			setQuad(Quad{ nextQuadFalse,"j","-","-","0" });//å‡å‡ºå£
 
-			//Ä¿±ê´úÂë ¼Ù³ö¿ÚµÄÌø×ªÖ¸Áî ´ı»ØÌî
+			//ç›®æ ‡ä»£ç  å‡å‡ºå£çš„è·³è½¬æŒ‡ä»¤ å¾…å›å¡«
 			int inst_ = targetCodeGenerator.setInstruction({ "j","","","" });
 			symbol.falseLabel.push_back(inst_);
 
@@ -427,24 +427,24 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 		symbol.name = prod.left;
 		symbol.value = op.name;//<|>|>=|<=|!=|==
 	}
-	else if (prod.left == "Expression") {//Expression->AddExpressionLoop AddExpression ÆäÊµÍ¬Ç°ÃæµÄAddExpressLoop²úÉúÊ½
+	else if (prod.left == "Expression") {//Expression->AddExpressionLoop AddExpression å…¶å®åŒå‰é¢çš„AddExpressLoopäº§ç”Ÿå¼
 		GrammarSymbol addExpression = grammarSymbolAttrStack.back();
 		GrammarSymbol addExpressionLoop = grammarSymbolAttrStack[grammarSymbolAttrStack.size() - 1 - 1];
 
 		symbol.name = prod.left;
-		//ÅĞ¶ÏAddExpressionLoopÊÇ·ñÎª¿Õ
+		//åˆ¤æ–­AddExpressionLoopæ˜¯å¦ä¸ºç©º
 		if (addExpressionLoop.value == "") {//AddExpressionLoop -> $ ==> Expression->AddExpression
-			//ÎŞĞè´´½¨ÁÙÊ±±äÁ¿ Ö±½Ó´«µİÊôĞÔ¼´¿É
+			//æ— éœ€åˆ›å»ºä¸´æ—¶å˜é‡ ç›´æ¥ä¼ é€’å±æ€§å³å¯
 			symbol.value = addExpression.value;
 			symbol.idx = addExpression.idx;
 		}
-		else {//²»¿Õ
-			//´Ë´¦ĞèÒªÉú³ÉËÄÔªÊ½
+		else {//ä¸ç©º
+			//æ­¤å¤„éœ€è¦ç”Ÿæˆå››å…ƒå¼
 			/*
-			ËÄÔªÊ½µÄÉú³É¹æÔòÈçÏÂ£º
+			å››å…ƒå¼çš„ç”Ÿæˆè§„åˆ™å¦‚ä¸‹ï¼š
 				nextquad (jop,X1,X2, 0); trueList
 				nextquad+1 (j  ,- ,- , 0); falseList
-			´Ë´¦ÊÇ´ı»ØÌîµÄËÄÔªÊ½
+			æ­¤å¤„æ˜¯å¾…å›å¡«çš„å››å…ƒå¼
 			*/
 			string arg1 = getArgName(addExpressionLoop.idx);
 			string arg2 = getArgName(addExpression.idx);
@@ -454,11 +454,11 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 
 			int nextQuadTrue = getNextQuad();
 			symbol.trueList.push_back(nextQuadTrue);
-			setQuad(Quad{ nextQuadTrue,"j" + addExpressionLoop.value,arg1,arg2,"0" });//Õæ³ö¿Ú
+			setQuad(Quad{ nextQuadTrue,"j" + addExpressionLoop.value,arg1,arg2,"0" });//çœŸå‡ºå£
 
-			//Ä¿±ê´úÂë ±È½ÏÌø×ªÖ¸Áî ¼´£¨cmp rs,rt,branchLabel£©
+			//ç›®æ ‡ä»£ç  æ¯”è¾ƒè·³è½¬æŒ‡ä»¤ å³ï¼ˆcmp rs,rt,branchLabelï¼‰
 			int inst;
-			if (addExpressionLoop.value == ">") {//branchLabel ÏÈ¿Õ×Å  Ö®ºóĞèÒª»ØÌî
+			if (addExpressionLoop.value == ">") {//branchLabel å…ˆç©ºç€  ä¹‹åéœ€è¦å›å¡«
 				inst = targetCodeGenerator.setInstruction({ "bgt",rs,rt, "" });
 			}
 			else if (addExpressionLoop.value == ">=") {
@@ -476,14 +476,14 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 			else if (addExpressionLoop.value == "!=") {
 				inst = targetCodeGenerator.setInstruction({ "bne",rs,rt,"" });
 			}
-			//Õæ³ö¿Ú
+			//çœŸå‡ºå£
 			symbol.trueLabel.push_back(inst);
 
 			int nextQuadFalse = getNextQuad();
 			symbol.falseList.push_back(nextQuadFalse);
-			setQuad(Quad{ nextQuadFalse,"j","-","-","0" });//¼Ù³ö¿Ú
+			setQuad(Quad{ nextQuadFalse,"j","-","-","0" });//å‡å‡ºå£
 
-			//Ä¿±ê´úÂë ¼Ù³ö¿ÚÌø×ªÖ¸Áî
+			//ç›®æ ‡ä»£ç  å‡å‡ºå£è·³è½¬æŒ‡ä»¤
 			int inst_ = targetCodeGenerator.setInstruction({"j","","",""});
 			symbol.falseLabel.push_back(inst_);
 
@@ -495,14 +495,14 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 		symbol.name = prod.left;
 		symbol.value = "";
 		symbol.quad = getNextQuad();//M.quad = nextquad;
-		this->nextQuad--;//´ËÊ±nextQuadÒª-1 ·ñÔòÏÂÒ»¸öËÄÔªÊ½±êºÅ²»¶Ô
+		this->nextQuad--;//æ­¤æ—¶nextQuadè¦-1 å¦åˆ™ä¸‹ä¸€ä¸ªå››å…ƒå¼æ ‡å·ä¸å¯¹
 
-		//½øÈëifÇ° Çå¿Õ¼Ä´æÆ÷
+		//è¿›å…¥ifå‰ æ¸…ç©ºå¯„å­˜å™¨
 		targetCodeGenerator.clearRegs();
 
-		this->label++;//½øÈëifÓï¾ä ±êºÅ+1
+		this->label++;//è¿›å…¥ifè¯­å¥ æ ‡å·+1
 		labelStack.push_back(label);
-		int inst = targetCodeGenerator.setInstruction({ "__if"+to_string(labelStack.back()),":","","" }); //·µ»ØÕâÌõÖ¸ÁîµÄĞòºÅ
+		int inst = targetCodeGenerator.setInstruction({ "__if"+to_string(labelStack.back()),":","","" }); //è¿”å›è¿™æ¡æŒ‡ä»¤çš„åºå·
 		//__if0
 		symbol.inst = inst;
 	}
@@ -510,28 +510,28 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 		symbol.name = prod.left;
 		symbol.value = "";
 		symbol.quad = getNextQuad();//M.quad = nextquad;
-		this->nextQuad--;//´ËÊ±nextQuadÒª-1 ·ñÔòÏÂÒ»¸öËÄÔªÊ½±êºÅ²»¶Ô
+		this->nextQuad--;//æ­¤æ—¶nextQuadè¦-1 å¦åˆ™ä¸‹ä¸€ä¸ªå››å…ƒå¼æ ‡å·ä¸å¯¹
 		
-		//½øÈëelseÇ°Çå¿Õ¼Ä´æÆ÷
+		//è¿›å…¥elseå‰æ¸…ç©ºå¯„å­˜å™¨
 		targetCodeGenerator.clearRegs();
 
-		//else ·ÖÖ§ label²»ĞèÒª+1 È¥µ±Ç°ifÓï¾ä¿é±êÇ©¼´¿É
-		int inst = targetCodeGenerator.setInstruction({ "__else" + to_string(labelStack.back()),":","","" }); //·µ»ØÕâÌõÖ¸ÁîµÄĞòºÅ
+		//else åˆ†æ”¯ labelä¸éœ€è¦+1 å»å½“å‰ifè¯­å¥å—æ ‡ç­¾å³å¯
+		int inst = targetCodeGenerator.setInstruction({ "__else" + to_string(labelStack.back()),":","","" }); //è¿”å›è¿™æ¡æŒ‡ä»¤çš„åºå·
 		//__else0
-		symbol.inst = inst;//ÒÔºó»ØÌî
+		symbol.inst = inst;//ä»¥åå›å¡«
 	}
 	else if (prod.left == "If_N") {// If_N->$
 		symbol.name = prod.left;
 		symbol.value = "";
 		int nextQuad = getNextQuad();
 		symbol.nextList.push_back(nextQuad);
-		//Éú³ÉÒ»¸öËÄÔªÊ½
-		setQuad(Quad{ nextQuad,"j","-","-","-" });//´ı»ØÌî
+		//ç”Ÿæˆä¸€ä¸ªå››å…ƒå¼
+		setQuad(Quad{ nextQuad,"j","-","-","-" });//å¾…å›å¡«
 
-		//ÍË³öif else Óï¾ä Çå¿Õ¼Ä´æÆ÷
+		//é€€å‡ºif else è¯­å¥ æ¸…ç©ºå¯„å­˜å™¨
 		targetCodeGenerator.clearRegs();
 
-		//Ä¿±ê´úÂë ·ÀÖ¹Ö´ĞĞelse
+		//ç›®æ ‡ä»£ç  é˜²æ­¢æ‰§è¡Œelse
 		int inst = targetCodeGenerator.setInstruction({ "j","","","" });
 		
 		symbol.nextLabel.push_back(inst);
@@ -544,16 +544,16 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 
 		symbol.name = prod.left;
 		symbol.inst = if_m2.inst;
-		symbol.value = to_string(sentenceBlock.quad);//sentenceBlock.quad±Ø²»¿Õ ¹æÔ¼Ê±»ØÌîIfsentence.nextlist
-		symbol.quad = if_m2.quad;//½«If_M2µÄÖµ´æÔÚelseSentenceBlockµÄquadÀïÃæ  ÔÚif...else...Óï¾äÖĞÒª»ØÌîIf_M2.quad
+		symbol.value = to_string(sentenceBlock.quad);//sentenceBlock.quadå¿…ä¸ç©º è§„çº¦æ—¶å›å¡«Ifsentence.nextlist
+		symbol.quad = if_m2.quad;//å°†If_M2çš„å€¼å­˜åœ¨elseSentenceBlockçš„quadé‡Œé¢  åœ¨if...else...è¯­å¥ä¸­è¦å›å¡«If_M2.quad
 		//merge(N.nextlist,S2.nextlist)
 		symbol.nextList.insert(symbol.nextList.end(), sentenceBlock.nextList.begin(), sentenceBlock.nextList.end());
 		symbol.nextList.insert(symbol.nextList.end(), if_n.nextList.begin(), if_n.nextList.end());
-		//»ØÌîÖ¸Áî
+		//å›å¡«æŒ‡ä»¤
 		symbol.nextLabel.insert(symbol.nextLabel.end(), sentenceBlock.nextLabel.begin(), sentenceBlock.nextLabel.end());
 		symbol.nextLabel.insert(symbol.nextLabel.end(), if_n.nextLabel.begin(), if_n.nextLabel.end());
 
-		//ÍË³öelseÇ° Çå¿Õ¼Ä´æÆ÷
+		//é€€å‡ºelseå‰ æ¸…ç©ºå¯„å­˜å™¨
 		targetCodeGenerator.clearRegs();
 
 	}
@@ -571,46 +571,46 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 			symbol.nextList.insert(symbol.nextList.end(), sentenceBlock.nextList.begin(), sentenceBlock.nextList.end());
 			//backpatch(E.truelist,M1.quad)
 			backpatch(expression.trueList, if_m1.quad);
-			//if ... then ...ĞèÒªÓÃsentenceBlock.quad »ØÌîsymbol.nextlist 
+			//if ... then ...éœ€è¦ç”¨sentenceBlock.quad å›å¡«symbol.nextlist 
 			backpatch(symbol.nextList, sentenceBlock.quad);
 			////////////////////////////////////////////////////////////////////////////////////////////////////////
 			
-			//ÍË³öÖ»ÓĞifµÄÓï¾äÇ° ĞèÒªÇå¿Õ¼Ä´æÆ÷
+			//é€€å‡ºåªæœ‰ifçš„è¯­å¥å‰ éœ€è¦æ¸…ç©ºå¯„å­˜å™¨
 			targetCodeGenerator.clearRegs();
 
-			//Ä¿±ê´úÂë»ØÌî
+			//ç›®æ ‡ä»£ç å›å¡«
 			symbol.nextLabel.insert(symbol.nextLabel.end(), expression.falseLabel.begin(), expression.falseLabel.end());
 			symbol.nextLabel.insert(symbol.nextLabel.end(), sentenceBlock.falseLabel.begin(), sentenceBlock.falseLabel.end());
-			//»ØÌîÖ¸Áî
+			//å›å¡«æŒ‡ä»¤
 			targetCodeGenerator.backpatch_(expression.trueLabel,if_m1.inst);
-			int inst = targetCodeGenerator.setInstruction({ "__end_if"+to_string(labelStack.back()),":","","" });//´Ë´¦Ö»ÓĞifÓï¾ä ½áÊø±êÇ©
+			int inst = targetCodeGenerator.setInstruction({ "__end_if"+to_string(labelStack.back()),":","","" });//æ­¤å¤„åªæœ‰ifè¯­å¥ ç»“æŸæ ‡ç­¾
 			targetCodeGenerator.backpatch_(symbol.nextLabel, inst);
-			//ifÓï¾ä½áÊøÖ®ºólabelStackĞèÒªµ¯Õ»
+			//ifè¯­å¥ç»“æŸä¹‹ålabelStackéœ€è¦å¼¹æ ˆ
 			labelStack.pop_back();
 		}
 		else {//IfSentence->if ( Expression ) If_M1 SentenceBlock1 If_N else If_M2 SentenceBlock2
 			//merge(S1.nextlist,N.nextlist,S2.nextlist)
 			symbol.nextList.insert(symbol.nextList.end(), sentenceBlock.nextList.begin(), sentenceBlock.nextList.end());
 			symbol.nextList.insert(symbol.nextList.end(), elseSentenceBlock.nextList.begin(), elseSentenceBlock.nextList.end());
-			//»ØÌî
+			//å›å¡«
 			//backpatch(E.truelist,M1.quad)
 			//backpatch(E.falselist,M2.quad)
 			backpatch(expression.trueList, if_m1.quad);
 			backpatch(expression.falseList, elseSentenceBlock.quad);
-			//if ... then ...ĞèÒªÓÃelseSentenceBlock.value »ØÌîsymbol.nextlist
+			//if ... then ...éœ€è¦ç”¨elseSentenceBlock.value å›å¡«symbol.nextlist
 			backpatch(symbol.nextList, stoi(elseSentenceBlock.value));
 			////////////////////////////////////////////////////////////////////////////////////////////////////////
-			//Ä¿±ê´úÂë»ØÌî
+			//ç›®æ ‡ä»£ç å›å¡«
 			symbol.nextLabel.insert(symbol.nextLabel.end(), sentenceBlock.nextLabel.begin(), sentenceBlock.nextLabel.end());
 			symbol.nextLabel.insert(symbol.nextLabel.end(), elseSentenceBlock.nextLabel.begin(), elseSentenceBlock.nextLabel.end());
 			
 			targetCodeGenerator.backpatch_(expression.trueLabel, if_m1.inst);
-			targetCodeGenerator.backpatch_(expression.falseLabel, elseSentenceBlock.inst);//if_m2.inst»ØÌî
-			//»ØÌînextlabel
+			targetCodeGenerator.backpatch_(expression.falseLabel, elseSentenceBlock.inst);//if_m2.instå›å¡«
+			//å›å¡«nextlabel
 			int inst = targetCodeGenerator.setInstruction({"__end_if_else"+to_string(labelStack.back()),":","",""});
 			targetCodeGenerator.backpatch_(symbol.nextLabel,inst);
 
-			//if else Óï¾ä½áÊø µ¯Õ»
+			//if else è¯­å¥ç»“æŸ å¼¹æ ˆ
 			labelStack.pop_back();
 ;		}
 	}
@@ -618,13 +618,13 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 		symbol.name = prod.left;
 		symbol.value = "";
 		symbol.quad = getNextQuad();//M.quad = nextquad;
-		this->nextQuad--;//´ËÊ±nextQuadÒª-1 ·ñÔòÏÂÒ»¸öËÄÔªÊ½±êºÅ²»¶Ô
+		this->nextQuad--;//æ­¤æ—¶nextQuadè¦-1 å¦åˆ™ä¸‹ä¸€ä¸ªå››å…ƒå¼æ ‡å·ä¸å¯¹
 
-		//Ä¿±ê´úÂë»ØÌî
-		//½øÈëÑ­»·Ç° Çå¿Õ¼Ä´æÆ÷
+		//ç›®æ ‡ä»£ç å›å¡«
+		//è¿›å…¥å¾ªç¯å‰ æ¸…ç©ºå¯„å­˜å™¨
 		targetCodeGenerator.clearRegs();
 
-		//½øÈëÑ­»·Óï¾ä ±êÇ©+1
+		//è¿›å…¥å¾ªç¯è¯­å¥ æ ‡ç­¾+1
 		this->label++;
 		labelStack.push_back(label);
 		int inst = targetCodeGenerator.setInstruction({"__while"+to_string(labelStack.back()),":","",""});
@@ -634,9 +634,9 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 		symbol.name = prod.left;
 		symbol.value = "";
 		symbol.quad = getNextQuad();//M.quad = nextquad;
-		this->nextQuad--;//´ËÊ±nextQuadÒª-1 ·ñÔòÏÂÒ»¸öËÄÔªÊ½±êºÅ²»¶Ô
+		this->nextQuad--;//æ­¤æ—¶nextQuadè¦-1 å¦åˆ™ä¸‹ä¸€ä¸ªå››å…ƒå¼æ ‡å·ä¸å¯¹
 		
-		//Ä¿±ê´úÂë»ØÌî
+		//ç›®æ ‡ä»£ç å›å¡«
 		int inst = targetCodeGenerator.setInstruction({ "__while_begin"+to_string(labelStack.back()),":","","" });
 		symbol.inst = inst;
 
@@ -649,7 +649,7 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 
 		symbol.name = prod.left;
 		symbol.value = "";
-		//»ØÌî
+		//å›å¡«
 		//backpatch(E.truelist,M2.quad)
 		//backpatch(S.nextlist,M1.quad)
 		backpatch(expression.trueList, while_m2.quad);
@@ -657,32 +657,32 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 		//S.nextlist = E.falselist
 		symbol.nextList = expression.falseList;
 
-		//Ä¿±ê´úÂë»ØÌî
+		//ç›®æ ‡ä»£ç å›å¡«
 		targetCodeGenerator.backpatch_(expression.trueLabel, while_m2.inst);
-		targetCodeGenerator.backpatch_(sentenceBlock.nextLabel, while_m1.inst);//ÆäÊµsentenceBlockµÄnextList  nextLabel¶¼Îª¿Õ
+		targetCodeGenerator.backpatch_(sentenceBlock.nextLabel, while_m1.inst);//å…¶å®sentenceBlockçš„nextList  nextLabeléƒ½ä¸ºç©º
 		symbol.nextLabel = expression.falseLabel;
 
 
-		//Éú³ÉÒ»¸öËÄÔªÊ½
-		//×¢Òâ¸ÃËÄÔªÊ½²»ÔÚSentenceBlockÖĞ  ËüÊÇ¿ØÖÆÑ­»·µÄ
+		//ç”Ÿæˆä¸€ä¸ªå››å…ƒå¼
+		//æ³¨æ„è¯¥å››å…ƒå¼ä¸åœ¨SentenceBlockä¸­  å®ƒæ˜¯æ§åˆ¶å¾ªç¯çš„
 		setQuad(Quad{ getNextQuad(),"j","-","-",to_string(while_m1.quad) });
 
-		//½áÊø±¾´ÎÑ­»·Ç° Çå¿Õ¼Ä´æÆ÷
+		//ç»“æŸæœ¬æ¬¡å¾ªç¯å‰ æ¸…ç©ºå¯„å­˜å™¨
 		targetCodeGenerator.clearRegs();
 
-		//Ä¿±ê´úÂë ¿ØÖÆÑ­»·
+		//ç›®æ ‡ä»£ç  æ§åˆ¶å¾ªç¯
 		targetCodeGenerator.setInstruction({ "j","","",targetCodeGenerator.getInst(while_m1.inst).op });//j __while
 
 
-		//ÓÃSentenceBlock.quad + 1»ØÌî WhileSentence.nextlist ±íÊ¾ÍË³öÑ­»·
-		//Ö÷ÒªÊÇ¶àÁËÒ»¾ä(j,-,-,M1.quad) Ëü²¢²»ÊÇÔÚSentenceBlockÖĞÉú³ÉµÄËÄÔªÊ½ ÒªÌø¹ıÕâÒ»¾ä
+		//ç”¨SentenceBlock.quad + 1å›å¡« WhileSentence.nextlist è¡¨ç¤ºé€€å‡ºå¾ªç¯
+		//ä¸»è¦æ˜¯å¤šäº†ä¸€å¥(j,-,-,M1.quad) å®ƒå¹¶ä¸æ˜¯åœ¨SentenceBlockä¸­ç”Ÿæˆçš„å››å…ƒå¼ è¦è·³è¿‡è¿™ä¸€å¥
 		backpatch(symbol.nextList, sentenceBlock.quad + 1);
 
 		int inst = targetCodeGenerator.setInstruction({"__while_end"+to_string(labelStack.back()),":","",""});
-		//Ä¿±ê´úÂë»ØÌî whileµÄnextlabel
+		//ç›®æ ‡ä»£ç å›å¡« whileçš„nextlabel
 		targetCodeGenerator.backpatch_(symbol.nextLabel, inst);
 
-		//ÍË³öÑ­»· labelStack µ¯Õ»
+		//é€€å‡ºå¾ªç¯ labelStack å¼¹æ ˆ
 		labelStack.pop_back();
 		
 	}
@@ -691,44 +691,44 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 		GrammarSymbol id = grammarSymbolAttrStack[grammarSymbolAttrStack.size() - 1 - 3];
 
 		symbol.name = prod.left;
-		//Åöµ½identifierĞèÒª¼ì²éÊÇ·ñ¶¨Òå¹ı  (µ±Ç°º¯Êı·ûºÅ±íºÍÈ«¾Ö·ûºÅ±í)
+		//ç¢°åˆ°identifieréœ€è¦æ£€æŸ¥æ˜¯å¦å®šä¹‰è¿‡  (å½“å‰å‡½æ•°ç¬¦å·è¡¨å’Œå…¨å±€ç¬¦å·è¡¨)
 		int symbolIdx = -1;
 		int tableIdx = 0;
 		for (auto iter = displayTable.rbegin(); iter != displayTable.rend(); ++iter) {
-			SymbolTable st = symbolTables[*iter];//µÃµ½xx·ûºÅ±í
-			symbolIdx = st.getSymbolIdx(id.value);//Í¨¹ıÎÄ·¨·ûºÅÖµÔÚ·ûºÅ±íÖĞ²éÕÒÆäË÷Òı
-			if (symbolIdx != -1) {//ÕÒµ½ÁË
+			SymbolTable st = symbolTables[*iter];//å¾—åˆ°xxç¬¦å·è¡¨
+			symbolIdx = st.getSymbolIdx(id.value);//é€šè¿‡æ–‡æ³•ç¬¦å·å€¼åœ¨ç¬¦å·è¡¨ä¸­æŸ¥æ‰¾å…¶ç´¢å¼•
+			if (symbolIdx != -1) {//æ‰¾åˆ°äº†
 				tableIdx = *iter;
 				break;
 			}
 		}
-		if (symbolIdx == -1) {//Ã»¶¨Òå¹ı ±¨´í
+		if (symbolIdx == -1) {//æ²¡å®šä¹‰è¿‡ æŠ¥é”™
 			cerr << "Semantic Analysis ERROR!" << endl;
 			cerr << "Identifier " << id.value << " was not defined! Please check if you have defined it!" << endl;
-			return false;//±¨´í
+			return false;//æŠ¥é”™
 		}
-		//±êÊ¶·ûÒÑ¾­¶¨Òå
+		//æ ‡è¯†ç¬¦å·²ç»å®šä¹‰
 		string arg1 = getArgName(expression.idx);
 		string result = getArgName(Index{ tableIdx,symbolIdx });
-		//Éú³ÉÒ»¸öËÄÔªÊ½
+		//ç”Ÿæˆä¸€ä¸ªå››å…ƒå¼
 		setQuad(Quad{ getNextQuad(),":=",arg1,"-",result });
 
-		//¸³ÖµÖ¸Áî add rs,rt,$0 //rs = rt;
+		//èµ‹å€¼æŒ‡ä»¤ add rs,rt,$0 //rs = rt;
 		string rs = targetCodeGenerator.getOperand(Index{ tableIdx,symbolIdx });
 		string rt = targetCodeGenerator.getOperand(expression.idx);
 		targetCodeGenerator.setInstruction({ "add",rs,rt,"$0" });
 
 
-		symbol.value = "";//¿Õ
+		symbol.value = "";//ç©º
 	}
 	else if (prod.left == "ReturnExpression" && prod.right[0] == "$") {//ReturnExpression->$
 		symbol.name = prod.left;
-		symbol.value = "";//·µ»ØÖµÀàĞÍÎª¿Õ
+		symbol.value = "";//è¿”å›å€¼ç±»å‹ä¸ºç©º
 
 		//ReturnSentence->return ReturnExpression($) ;
-		//´ËÊ±Õ»¶¥ÊÇreturn
-		//·µ»ØÀàĞÍÊÇvoid 
-		//ÅĞ¶Ïµ±Ç°º¯Êı·ûºÅ±íÖĞ0Ë÷Òı´¦ ·µ»ØÖµÀàĞÍ
+		//æ­¤æ—¶æ ˆé¡¶æ˜¯return
+		//è¿”å›ç±»å‹æ˜¯void 
+		//åˆ¤æ–­å½“å‰å‡½æ•°ç¬¦å·è¡¨ä¸­0ç´¢å¼•å¤„ è¿”å›å€¼ç±»å‹
 		if (VarType::VOID != symbolTables[displayTable.back()].getVarType(0)) {
 			cerr << "Semantic Analysis ERROR!" << endl;
 			cerr << "The return value type of the function does not match the declared type! Please Check it!" << endl;
@@ -737,7 +737,7 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 	}
 	else if (prod.left == "ReturnExpression" && prod.right[0] == "Expression") {//ReturnExpression->Expression
 		//ReturnSentence->return ReturnExpression ;
-		//´ËÊ±·µ»ØÖµ²»ÊÇvoid
+		//æ­¤æ—¶è¿”å›å€¼ä¸æ˜¯void
 		if (VarType::INT != symbolTables[displayTable.back()].getVarType(0)) {
 			cerr << "Semantic Analysis ERROR!" << endl;
 			cerr << "The return value type of the function does not match the declared type! Please Check it!" << endl;
@@ -746,35 +746,35 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 		GrammarSymbol expression = grammarSymbolAttrStack.back();
 
 		symbol.name = prod.left;
-		symbol.value = "int";//·µ»ØÖµÊÇint
-		//´Ë´¦Expression´ú±íµÄÁÙÊ±±äÁ¿Ë÷ÒıÖ±½Ó´«¸øReturnExpression
+		symbol.value = "int";//è¿”å›å€¼æ˜¯int
+		//æ­¤å¤„Expressionä»£è¡¨çš„ä¸´æ—¶å˜é‡ç´¢å¼•ç›´æ¥ä¼ ç»™ReturnExpression
 		symbol.idx = expression.idx;
 
-		//º¯Êı ·µ»ØÖµ ´æÔÚ$v0 ÖĞ
+		//å‡½æ•° è¿”å›å€¼ å­˜åœ¨$v0 ä¸­
 		string rt = targetCodeGenerator.getOperand(expression.idx);
 		targetCodeGenerator.setInstruction({"add","$v0",rt,"$0"});
-		// º¯Êı·µ»ØµØÖ·´æÔÚ $ra
-		targetCodeGenerator.setInstruction({"lw","$ra","4($fp)",""});//fp + 4 ´æ·Å·µ»ØµØÖ·
+		// å‡½æ•°è¿”å›åœ°å€å­˜åœ¨ $ra
+		targetCodeGenerator.setInstruction({"lw","$ra","4($fp)",""});//fp + 4 å­˜æ”¾è¿”å›åœ°å€
 	}
 	else if (prod.left == "ReturnSentence") {//ReturnSentence->return ReturnExpression ;
 		GrammarSymbol returnExpression = grammarSymbolAttrStack[grammarSymbolAttrStack.size() - 1 - 1];
 
 		symbol.name = prod.left;
 
-		if (returnExpression.value == "") {//·µ»ØvoidÀàĞÍÖµ
+		if (returnExpression.value == "") {//è¿”å›voidç±»å‹å€¼
 			symbol.value = "";
 		}
-		else {//·µ»Øint ÀàĞÍÖµ
+		else {//è¿”å›int ç±»å‹å€¼
 			symbol.value = "int";
-			//½«·µ»ØÖµ·ÅÔÚº¯Êı·ûºÅ±íµÄ0Ë÷Òı
+			//å°†è¿”å›å€¼æ”¾åœ¨å‡½æ•°ç¬¦å·è¡¨çš„0ç´¢å¼•
 			symbol.idx = { Index{displayTable.back(),0} };
-			string arg1 = getArgName(returnExpression.idx);//ReturnExpression´æ´¢µÄÁÙÊ±±äÁ¿
+			string arg1 = getArgName(returnExpression.idx);//ReturnExpressionå­˜å‚¨çš„ä¸´æ—¶å˜é‡
 			string result = getArgName(symbol.idx);
 
-			//Éú³ÉÒ»¸ö·µ»ØÖµ¸³ÖµËÄÔªÊ½
+			//ç”Ÿæˆä¸€ä¸ªè¿”å›å€¼èµ‹å€¼å››å…ƒå¼
 			setQuad(Quad{ getNextQuad(),":=",arg1,"-",result });
 		}
-		//Éú³ÉÒ»¸ö·µ»ØÖµËÄÔªÊ½ ´Ë´¦ÊÇ±íÊ¾ÍË³ö¸Ãº¯Êı¶¨Òå
+		//ç”Ÿæˆä¸€ä¸ªè¿”å›å€¼å››å…ƒå¼ æ­¤å¤„æ˜¯è¡¨ç¤ºé€€å‡ºè¯¥å‡½æ•°å®šä¹‰
 		//(return,-,-,function)
 		setQuad(Quad{ getNextQuad(),"return","-","-",symbolTables[displayTable.back()].getName() });
 	}
@@ -782,76 +782,76 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 		symbol.name = prod.left;
 
 		GrammarSymbol id = grammarSymbolAttrStack.back();
-		//Åöµ½identifier¾ÍÒª¿´ÊÇ¶¼ÔÚº¯ÊıÖĞ¶¨Òå¹ı
-		//ÔÚµ±Ç°º¯Êı·ûºÅ±íÖĞ(displayTable.back())²éÕÒ¸Ã±êÊ¶·û  ¿´ÊÇ·ñ¶¨Òå¹ı
-		if (symbolTables[displayTable.back()].getSymbolIdx(id.value) != -1) {//ÕÒµ½ ËµÃ÷¸Ã±êÊ¶·ûÒÑ¾­¶¨Òå ÖØ¸´¶¨Òå 
+		//ç¢°åˆ°identifierå°±è¦çœ‹æ˜¯éƒ½åœ¨å‡½æ•°ä¸­å®šä¹‰è¿‡
+		//åœ¨å½“å‰å‡½æ•°ç¬¦å·è¡¨ä¸­(displayTable.back())æŸ¥æ‰¾è¯¥æ ‡è¯†ç¬¦  çœ‹æ˜¯å¦å®šä¹‰è¿‡
+		if (symbolTables[displayTable.back()].getSymbolIdx(id.value) != -1) {//æ‰¾åˆ° è¯´æ˜è¯¥æ ‡è¯†ç¬¦å·²ç»å®šä¹‰ é‡å¤å®šä¹‰ 
 			cerr << "Semantic Analysis ERROR!" << endl;
 			cerr << "Identifier " << id.value << " has been defined!" << endl;
-			return false;//±¨´í
+			return false;//æŠ¥é”™
 		}
-		//ÔÚÈ«¾Ö·ûºÅ±íÖĞ²éÕÒ¸Ã±êÊ¶·û ¿´ÊÇ·ñ¶¨Òå¹ı ÊÇ·ñÓëº¯ÊıÃû³åÍ»
+		//åœ¨å…¨å±€ç¬¦å·è¡¨ä¸­æŸ¥æ‰¾è¯¥æ ‡è¯†ç¬¦ çœ‹æ˜¯å¦å®šä¹‰è¿‡ æ˜¯å¦ä¸å‡½æ•°åå†²çª
 		int symbolIdx1 = symbolTables[0].getSymbolIdx(id.value);
-		if (-1 != symbolIdx1 && symbolTables[0].getSymbolType(symbolIdx1) == SymbolType::FUNCTION) {//ÊÇ·ñ±»¶¨ÒåÎªº¯Êı
+		if (-1 != symbolIdx1 && symbolTables[0].getSymbolType(symbolIdx1) == SymbolType::FUNCTION) {//æ˜¯å¦è¢«å®šä¹‰ä¸ºå‡½æ•°
 			cerr << "Semantic Analysis ERROR!" << endl;
 			cerr << "Identifier " << id.value << " has been defined as a FUNCTION!" << endl;
-			return false;//±¨´í
+			return false;//æŠ¥é”™
 		}
-		//Ã»¶¨Òå¹ı Ò²²»Óëº¯ÊıÃû³åÍ» ¿ÉÒÔ¶¨ÒåÎª±äÁ¿
+		//æ²¡å®šä¹‰è¿‡ ä¹Ÿä¸ä¸å‡½æ•°åå†²çª å¯ä»¥å®šä¹‰ä¸ºå˜é‡
 		Symbol var;
 		var.type = SymbolType::VAR;
 		var.varName = id.value;
-		var.varValue = "";//¿Õ »¹Î´¸³Öµ
+		var.varValue = "";//ç©º è¿˜æœªèµ‹å€¼
 		var.varType = VarType::INT;
-		//½«¸Ã±äÁ¿¼ÓÈëµ±Ç°º¯Êı·ûºÅ±í
-		int  symbolIdx2 = symbolTables[displayTable.back()].setSymbol(var); //·µ»Ø±äÁ¿ÔÚº¯Êı·ûºÅ±íÖĞË÷Òı
+		//å°†è¯¥å˜é‡åŠ å…¥å½“å‰å‡½æ•°ç¬¦å·è¡¨
+		int  symbolIdx2 = symbolTables[displayTable.back()].setSymbol(var); //è¿”å›å˜é‡åœ¨å‡½æ•°ç¬¦å·è¡¨ä¸­ç´¢å¼•
 
-		symbol.value = id.value;//±äÁ¿Ãûx
+		symbol.value = id.value;//å˜é‡åx
 		symbol.idx = { displayTable.back(), symbolIdx2 };
 
-		targetCodeGenerator.incStackPointer(1);//sp = sp + 4; Îª¾Ö²¿±äÁ¿ÉêÇë¿Õ¼ä
+		targetCodeGenerator.incStackPointer(1);//sp = sp + 4; ä¸ºå±€éƒ¨å˜é‡ç”³è¯·ç©ºé—´
 	}
 	else if (prod.left == "SentenceBlock") {//SentenceBlock->SB_M { InternalStmt SentenceString }
-		//ÓÃÓÚ»ØÌî ¸ü´óÓï·¨µ¥Î»µÄnextlist
+		//ç”¨äºå›å¡« æ›´å¤§è¯­æ³•å•ä½çš„nextlist
 		symbol.name = prod.left;
-		symbol.value = "sb";//ËæÒâ
-		symbol.quad = getNextQuad();//»ØÌî
-		this->nextQuad--;//´Ë´¦±ØĞë-1
+		symbol.value = "sb";//éšæ„
+		symbol.quad = getNextQuad();//å›å¡«
+		this->nextQuad--;//æ­¤å¤„å¿…é¡»-1
 
-		////´Ë´¦»¹ĞèÒªÉú³ÉÒ»¸ö±êÇ© ±íÊ¾½áÊø
+		////æ­¤å¤„è¿˜éœ€è¦ç”Ÿæˆä¸€ä¸ªæ ‡ç­¾ è¡¨ç¤ºç»“æŸ
 		//int inst = targetCodeGenerator.setInstruction({ "__end",":","","" });
-		//symbol.inst = inst;//»ØÌî
+		//symbol.inst = inst;//å›å¡«
 	}
-	else if (prod.left == "Param") {//Param->int id  ĞÎ²Î
+	else if (prod.left == "Param") {//Param->int id  å½¢å‚
 		GrammarSymbol id = grammarSymbolAttrStack.back();
 
 		symbol.name = prod.left;
-		//Åöµ½identifier¾ÍÒª¿´ÊÇ·ñ¶¨Òå¹ı
-		//ÔÚµ±Ç°º¯Êı·ûºÅ±íÖĞ(displayTable.back())²éÕÒ¸Ã±êÊ¶·û  ¿´ÊÇ·ñ¶¨Òå¹ı
-		if (symbolTables[displayTable.back()].getSymbolIdx(id.value) != -1) {//ÕÒµ½ ËµÃ÷¸Ã±êÊ¶·ûÒÑ¾­¶¨Òå ÖØ¸´¶¨Òå 
+		//ç¢°åˆ°identifierå°±è¦çœ‹æ˜¯å¦å®šä¹‰è¿‡
+		//åœ¨å½“å‰å‡½æ•°ç¬¦å·è¡¨ä¸­(displayTable.back())æŸ¥æ‰¾è¯¥æ ‡è¯†ç¬¦  çœ‹æ˜¯å¦å®šä¹‰è¿‡
+		if (symbolTables[displayTable.back()].getSymbolIdx(id.value) != -1) {//æ‰¾åˆ° è¯´æ˜è¯¥æ ‡è¯†ç¬¦å·²ç»å®šä¹‰ é‡å¤å®šä¹‰ 
 			cerr << "Semantic Analysis ERROR!" << endl;
 			cerr << "Identifier " << id.value << " has been defined!" << endl;
-			return false;//±¨´í
+			return false;//æŠ¥é”™
 		}
-		//ÔÚÈ«¾Ö·ûºÅ±íÖĞ²éÕÒ¸Ã±êÊ¶·û ¿´ÊÇ·ñ¶¨Òå¹ı ÊÇ·ñÓëº¯ÊıÃû³åÍ»
+		//åœ¨å…¨å±€ç¬¦å·è¡¨ä¸­æŸ¥æ‰¾è¯¥æ ‡è¯†ç¬¦ çœ‹æ˜¯å¦å®šä¹‰è¿‡ æ˜¯å¦ä¸å‡½æ•°åå†²çª
 		int symbolIdx1 = symbolTables[0].getSymbolIdx(id.value);
-		if (-1 != symbolIdx1 && symbolTables[0].getSymbolType(symbolIdx1) == SymbolType::FUNCTION) {//ÊÇ·ñ±»¶¨ÒåÎªº¯Êı
+		if (-1 != symbolIdx1 && symbolTables[0].getSymbolType(symbolIdx1) == SymbolType::FUNCTION) {//æ˜¯å¦è¢«å®šä¹‰ä¸ºå‡½æ•°
 			cerr << "Semantic Analysis ERROR!" << endl;
 			cerr << "Identifier " << id.value << " has been defined as a FUNCTION!" << endl;
-			return false;//±¨´í
+			return false;//æŠ¥é”™
 		}
-		//Ã»¶¨Òå¹ı Ò²²»Óëº¯ÊıÃû³åÍ» ¿ÉÒÔ¶¨ÒåÎª±äÁ¿
+		//æ²¡å®šä¹‰è¿‡ ä¹Ÿä¸ä¸å‡½æ•°åå†²çª å¯ä»¥å®šä¹‰ä¸ºå˜é‡
 		Symbol var;
 		var.type = SymbolType::VAR;
 		var.varName = id.value;
-		var.varValue = "";//¿Õ »¹Î´¸³Öµ
+		var.varValue = "";//ç©º è¿˜æœªèµ‹å€¼
 		var.varType = VarType::INT;
-		//½«¸Ã±äÁ¿¼ÓÈëµ±Ç°º¯Êı·ûºÅ±í
-		int  symbolIdx2 = symbolTables[displayTable.back()].setSymbol(var); //·µ»Ø±äÁ¿ÔÚº¯Êı·ûºÅ±íÖĞË÷Òı
+		//å°†è¯¥å˜é‡åŠ å…¥å½“å‰å‡½æ•°ç¬¦å·è¡¨
+		int  symbolIdx2 = symbolTables[displayTable.back()].setSymbol(var); //è¿”å›å˜é‡åœ¨å‡½æ•°ç¬¦å·è¡¨ä¸­ç´¢å¼•
 
-		symbol.value = id.value;//±äÁ¿Ãûx
+		symbol.value = id.value;//å˜é‡åx
 		symbol.idx = { displayTable.back(), symbolIdx2 };
 
-		//È«¾Ö·ûºÅ±íÖĞµÄµ±Ç°º¯Êı·ûºÅ ĞèÒª½«ĞÎÊ½²ÎÊı¸öÊı¼Ó1
+		//å…¨å±€ç¬¦å·è¡¨ä¸­çš„å½“å‰å‡½æ•°ç¬¦å· éœ€è¦å°†å½¢å¼å‚æ•°ä¸ªæ•°åŠ 1
 		int tableIdx = symbolTables[0].getSymbolIdx(symbolTables[displayTable.back()].getName());
 		symbolTables[0].getSymbol(tableIdx).formalParaNum++;
 	}
@@ -863,71 +863,71 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 		symbol.name = prod.left;
 		symbol.value = "";
 		//Stmt->int id FunctionBegin($) FunctionStmt|void id FunctionBegin($) FunctionStmt
-		//´ËÊ±µÄÕ»¶¥ÔªËØÎªid, FunctionStmt»¹Ã»½øÕ»
+		//æ­¤æ—¶çš„æ ˆé¡¶å…ƒç´ ä¸ºid, FunctionStmtè¿˜æ²¡è¿›æ ˆ
 		GrammarSymbol id = grammarSymbolAttrStack.back();
 		GrammarSymbol returnType = grammarSymbolAttrStack[grammarSymbolAttrStack.size() - 1 - 1];
-		//ÔÚÈ«¾Ö·ûºÅ±íÖĞ²éÕÒ´Ëº¯ÊıÊÇ·ñ¶¨Òå
+		//åœ¨å…¨å±€ç¬¦å·è¡¨ä¸­æŸ¥æ‰¾æ­¤å‡½æ•°æ˜¯å¦å®šä¹‰
 		if (-1 != symbolTables[0].getSymbolIdx(id.value)) {
 			cerr << "Semantic Analysis ERROR!" << endl;
 			cerr << "Identifier " << id.value << " has been defined as a FUNCTION!" << endl;
-			return false;//±¨´í
+			return false;//æŠ¥é”™
 		}
-		//Ã»ÓĞ¶¨Òå ´´½¨Ò»¸öĞÂº¯Êı·ûºÅ±í
+		//æ²¡æœ‰å®šä¹‰ åˆ›å»ºä¸€ä¸ªæ–°å‡½æ•°ç¬¦å·è¡¨
 		createSymbolTable(TableType::FUNCTION, id.value);
-		//½«¸Ãº¯ÊıÃû¼Óµ½È«¾Ö·ûºÅ±íÖĞ
+		//å°†è¯¥å‡½æ•°ååŠ åˆ°å…¨å±€ç¬¦å·è¡¨ä¸­
 		Symbol func;
 		func.type = SymbolType::FUNCTION;
 		func.varName = id.value;
 		func.varValue = "";
 		func.varType = (returnType.value == "void") ? VarType::VOID : VarType::INT;
-		func.funcTableIdx = symbolTables.size() - 1;//º¯Êı·ûºÅÔÚÈ«¾Ö·ûºÅ±íÖĞµÄÎ»ÖÃ
+		func.funcTableIdx = symbolTables.size() - 1;//å‡½æ•°ç¬¦å·åœ¨å…¨å±€ç¬¦å·è¡¨ä¸­çš„ä½ç½®
 		int symbolIdx = symbolTables[0].setSymbol(func);
 
-		//´´½¨º¯Êı·µ»ØÖµ
+		//åˆ›å»ºå‡½æ•°è¿”å›å€¼
 		Symbol returnVar;
 		returnVar.type = SymbolType::RETURN;
 		returnVar.varName = symbolTables[displayTable.back()].getName() + "_return_value";
-		returnVar.varValue = "";//·µ»ØÖµÔİÊ±Îª¿Õ
+		returnVar.varValue = "";//è¿”å›å€¼æš‚æ—¶ä¸ºç©º
 		returnVar.varType = (returnType.value == "void") ? VarType::VOID : VarType::INT;
-		//½«º¯Êı·µ»ØÖµ¼ÓÈëµ½º¯Êı·ûºÅ±íµÄ0Ë÷Òı£¨¸Ã±äÁ¿ÊÇ´´½¨º¯ÊıÊ±µÚÒ»¸ö¼Ó½øÈ¥µÄ¹ÊË÷ÒıÎª0£©
+		//å°†å‡½æ•°è¿”å›å€¼åŠ å…¥åˆ°å‡½æ•°ç¬¦å·è¡¨çš„0ç´¢å¼•ï¼ˆè¯¥å˜é‡æ˜¯åˆ›å»ºå‡½æ•°æ—¶ç¬¬ä¸€ä¸ªåŠ è¿›å»çš„æ•…ç´¢å¼•ä¸º0ï¼‰
 		symbolTables[displayTable.back()].setSymbol(returnVar);
 
 		int nextQuad = getNextQuad();
-		//ÅĞ¶Ï¸Ã±êÊ¶·ûÊÇ·ñÎªmain
+		//åˆ¤æ–­è¯¥æ ‡è¯†ç¬¦æ˜¯å¦ä¸ºmain
 		if (id.value == "main") {
 			mainFuncLine = nextQuad;
 		}
 
-		//Éú³ÉÒ»¸öËÄÔªÊ½ ÓÃÓÚ±íÊ¾´ËÊ±½øÈëµ±Ç°º¯Êı
+		//ç”Ÿæˆä¸€ä¸ªå››å…ƒå¼ ç”¨äºè¡¨ç¤ºæ­¤æ—¶è¿›å…¥å½“å‰å‡½æ•°
 		setQuad(Quad{ nextQuad, id.value,"-","-","-" });
 
-		//Ä¿±ê´úÂë ±íÊ¾½øÈë¸Ãº¯Êı
+		//ç›®æ ‡ä»£ç  è¡¨ç¤ºè¿›å…¥è¯¥å‡½æ•°
 		targetCodeGenerator.setInstruction({ id.value,":","","" });
-		//½¨Á¢»î¶¯¼ÇÂ¼
+		//å»ºç«‹æ´»åŠ¨è®°å½•
 		targetCodeGenerator.setActivityRecordHeader();
 	}
 	else if (prod.left == "FunctionEnd") {//FunctionEnd->$
 		symbol.name = prod.left;
 		symbol.value = "";
 
-		//µÃµ½µ±Ç°º¯ÊıÃû³Æ ÓÃÓÚÅĞ¶ÏÊÇ·ñÊÇmainº¯Êı
-		string funcName = symbolTables[0].getSymbol(displayTable.back()).varName;
+		//å¾—åˆ°å½“å‰å‡½æ•°åç§° ç”¨äºåˆ¤æ–­æ˜¯å¦æ˜¯mainå‡½æ•°
+		string funcName = symbolTables[displayTable.back()].getName();
 
-		//´Ë´¦ÒªÌØ±ğ×¢Òâ ÒªÔÚdisplay±íÖĞÍË³ö±¾º¯Êı·ûºÅ±í
+		//æ­¤å¤„è¦ç‰¹åˆ«æ³¨æ„ è¦åœ¨displayè¡¨ä¸­é€€å‡ºæœ¬å‡½æ•°ç¬¦å·è¡¨
 		displayTable.pop_back();
 
-		targetCodeGenerator.clearRegs();//ÍË³öº¯ÊıÇ° Çå¿Õ¼Ä´æÆ÷
+		targetCodeGenerator.clearRegs();//é€€å‡ºå‡½æ•°å‰ æ¸…ç©ºå¯„å­˜å™¨
 
 		if (funcName == "main") {
 			targetCodeGenerator.setInstruction({ "j","","","Exit" }); //go to Exit
 			targetCodeGenerator.setInstruction({ "Exit",":","","" });
 		}
-		else {//ÆÕÍ¨º¯Êı  jr $ra
-			targetCodeGenerator.setInstruction({ "jr","$ra","","" }); //go to $31¼Ä´æÆ÷´æ´¢µÄ·µ»ØµØÖ·
+		else {//æ™®é€šå‡½æ•°  jr $ra
+			targetCodeGenerator.setInstruction({ "jr","$ra","","" }); //go to $31å¯„å­˜å™¨å­˜å‚¨çš„è¿”å›åœ°å€
 		}
 	}
 	else if (prod.left == "StmtType" && prod.right[0] == "VariableStmt") {//StmtType->VariableStmt
-		//´ËÊ±Ö±½Ó½«VariableStmtµÄÊôĞÔ´«µİ¼´¿É
+		//æ­¤æ—¶ç›´æ¥å°†VariableStmtçš„å±æ€§ä¼ é€’å³å¯
 		symbol.name = prod.left;
 		symbol.value = grammarSymbolAttrStack.back().value;//;
 	}
@@ -937,85 +937,85 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 
 		symbol.name = prod.left;
 
-		//ÅĞ¶ÏStmtType
-		if (stmtType.value == ";") {//¶¨Òå±äÁ¿
-			//´Óµ±Ç°º¯Êı¶¨ÒåÓò¿ªÊ¼¼ì²é ¿´ÊÇ·ñ¶¨Òå¹ı¸Ã±äÁ¿
+		//åˆ¤æ–­StmtType
+		if (stmtType.value == ";") {//å®šä¹‰å˜é‡
+			//ä»å½“å‰å‡½æ•°å®šä¹‰åŸŸå¼€å§‹æ£€æŸ¥ çœ‹æ˜¯å¦å®šä¹‰è¿‡è¯¥å˜é‡
 			int idx = -1;
-			for (auto iter = displayTable.rbegin(); iter != displayTable.rend(); ++iter) {//display±íÊÇxx·ûºÅ±íµÄË÷Òı
-				SymbolTable st = symbolTables[*iter];//µÃµ½xx·ûºÅ±í
-				idx = st.getSymbolIdx(id.value);//Í¨¹ıÎÄ·¨·ûºÅÖµÔÚ·ûºÅ±íÖĞ²éÕÒÆäË÷Òı
-				if (idx != -1) {//ÕÒµ½ÁË ËµÃ÷ÒÑ¾­¶¨Òå¹ıÁË
+			for (auto iter = displayTable.rbegin(); iter != displayTable.rend(); ++iter) {//displayè¡¨æ˜¯xxç¬¦å·è¡¨çš„ç´¢å¼•
+				SymbolTable st = symbolTables[*iter];//å¾—åˆ°xxç¬¦å·è¡¨
+				idx = st.getSymbolIdx(id.value);//é€šè¿‡æ–‡æ³•ç¬¦å·å€¼åœ¨ç¬¦å·è¡¨ä¸­æŸ¥æ‰¾å…¶ç´¢å¼•
+				if (idx != -1) {//æ‰¾åˆ°äº† è¯´æ˜å·²ç»å®šä¹‰è¿‡äº†
 					cerr << "Semantic Analysis ERROR!" << endl;
 					cerr << "Identifier " << id.value << " has been defined!" << endl;
-					return false;//±¨´í
+					return false;//æŠ¥é”™
 				}
 			}
-			//Ã»ÓĞ¶¨Òå¹ı
+			//æ²¡æœ‰å®šä¹‰è¿‡
 			Symbol var;
 			var.type = SymbolType::VAR;
 			var.varName = id.value;
-			var.varValue = "";//¿Õ,»¹Î´¸³Öµ
+			var.varValue = "";//ç©º,è¿˜æœªèµ‹å€¼
 			var.varType = VarType::INT;
 			symbolTables[displayTable.back()].setSymbol(var);
 
 			symbol.value = id.value;
 
-			targetCodeGenerator.incStackPointer(1);//sp = sp + 1; ¶¨ÒåÒ»¸ö¾Ö²¿±äÁ¿ ÎªÆä·ÖÅä´æ´¢¿Õ¼ä
+			targetCodeGenerator.incStackPointer(1);//sp = sp + 1; å®šä¹‰ä¸€ä¸ªå±€éƒ¨å˜é‡ ä¸ºå…¶åˆ†é…å­˜å‚¨ç©ºé—´
 		}
-		//else {//¶¨Òåº¯Êı FunctionBegin->$Ê±ÒÑ¾­Íê³É
+		//else {//å®šä¹‰å‡½æ•° FunctionBegin->$æ—¶å·²ç»å®Œæˆ
 		//}
 	}
 	else if (prod.left == "CallCheck") {//CallCheck->$
-		//¼ì²é¸Ãº¯ÊıÊÇ·ñ¶¨Òå
-		//Factor->id ( CallCheck($) ActualParamList )   ActualParamListÎ´½øÕ»
+		//æ£€æŸ¥è¯¥å‡½æ•°æ˜¯å¦å®šä¹‰
+		//Factor->id ( CallCheck($) ActualParamList )   ActualParamListæœªè¿›æ ˆ
 		GrammarSymbol id = grammarSymbolAttrStack[grammarSymbolAttrStack.size() - 1 - 1];
 
 		symbol.name = prod.left;
-		//²éÕÒidÊÇ·ñ¶¨Òå
+		//æŸ¥æ‰¾idæ˜¯å¦å®šä¹‰
 		int idx = -1;
-		for (auto iter = displayTable.rbegin(); iter != displayTable.rend(); ++iter) {//display±íÊÇxx·ûºÅ±íµÄË÷Òı
-			SymbolTable st = symbolTables[*iter];//µÃµ½xx·ûºÅ±í
-			idx = st.getSymbolIdx(id.value);//Í¨¹ıÎÄ·¨·ûºÅÖµÔÚ·ûºÅ±íÖĞ²éÕÒÆäË÷Òı
-			if (idx != -1) {//ÕÒµ½ÁË
+		for (auto iter = displayTable.rbegin(); iter != displayTable.rend(); ++iter) {//displayè¡¨æ˜¯xxç¬¦å·è¡¨çš„ç´¢å¼•
+			SymbolTable st = symbolTables[*iter];//å¾—åˆ°xxç¬¦å·è¡¨
+			idx = st.getSymbolIdx(id.value);//é€šè¿‡æ–‡æ³•ç¬¦å·å€¼åœ¨ç¬¦å·è¡¨ä¸­æŸ¥æ‰¾å…¶ç´¢å¼•
+			if (idx != -1) {//æ‰¾åˆ°äº†
 				break;
 			}
 		}
 		if (idx == -1) {
 			cerr << "Semantic Analysis ERROR!" << endl;
 			cerr << "Identifier " << id.value << " was not defined! Please check if you have defined it!" << endl;
-			return false;//±¨´í
+			return false;//æŠ¥é”™
 		}
-		//¶¨ÒåÁË ¿´ÊÇ·ñÎªº¯Êıµ÷ÓÃ
+		//å®šä¹‰äº† çœ‹æ˜¯å¦ä¸ºå‡½æ•°è°ƒç”¨
 		if (SymbolType::FUNCTION != symbolTables[0].getSymbolType(idx)) {
-			//²»ÊÇº¯Êıµ÷ÓÃ ±¨´í
+			//ä¸æ˜¯å‡½æ•°è°ƒç”¨ æŠ¥é”™
 			cerr << "Semantic Analysis ERROR!" << endl;
 			cerr << "Identifier " << id.value << " is not a FUNCTION, it is not callable!" << endl;
 			return false;
 		}
 		symbol.value = "";
-		//°Ñ±»µ÷ÓÃº¯Êı·ûºÅµÄË÷Òı
+		//æŠŠè¢«è°ƒç”¨å‡½æ•°ç¬¦å·çš„ç´¢å¼•
 		symbol.idx = { 0,idx };//{displayTable[*iter],idx}
 	}
 	else if (prod.left == "ExpressionLoop" && prod.right[0] == "$") {//ExpressionLoop->$
 		//ActualParamList->ExpressionLoop($) Expression
 		symbol.name = prod.left;
-		symbol.value = "1";//ÖÁÉÙ1Êµ²Î¡ª¡ªExpression
+		symbol.value = "1";//è‡³å°‘1å®å‚â€”â€”Expression
 	}
 	else if (prod.left == "ExpressionLoop" && prod.right[0] == "ExpressionLoop") { //ExpressionLoop -> ExpressionLoop Expression ,
 		//ActualParamList->ExpressionLoop Expression , 
-		//´ËÊ±Õ»¶¥Îª ,
+		//æ­¤æ—¶æ ˆé¡¶ä¸º ,
 		GrammarSymbol expression = grammarSymbolAttrStack[grammarSymbolAttrStack.size() - 1 - 1];
 		GrammarSymbol expressionLoop = grammarSymbolAttrStack[grammarSymbolAttrStack.size() - 1 - 2];
 		GrammarSymbol callCheck = grammarSymbolAttrStack[grammarSymbolAttrStack.size() - 1 - 3];
 
 		symbol.name = prod.left;
 
-		//ÔÚCallCheckÖĞÕÒµ½´æ·ÅµÄ±»µ÷ÓÃº¯Êı·ûºÅ
+		//åœ¨CallCheckä¸­æ‰¾åˆ°å­˜æ”¾çš„è¢«è°ƒç”¨å‡½æ•°ç¬¦å·
 		Symbol& calledFunc = symbolTables[callCheck.idx.tableIdx].getSymbol(callCheck.idx.symbolIdx);
 		int passedParamNum = stoi(expressionLoop.value);
 
-		//´Ë´¦ÎŞĞè½øĞĞ²ÎÊı¸öÊıÅĞ¶Ï ÒòÎª´ËÊ±»¹ÔÚ½øĞĞÊµ²ÎÉ¨Ãè
-		//Ó¦¸ÃÔÚ¹æÔ¼ÎªActualListÊ±½øĞĞÅĞ¶Ï ´ËÊ±²ÎÊıÒÑ¾­É¨ÃèÍê±Ï 
+		//æ­¤å¤„æ— éœ€è¿›è¡Œå‚æ•°ä¸ªæ•°åˆ¤æ–­ å› ä¸ºæ­¤æ—¶è¿˜åœ¨è¿›è¡Œå®å‚æ‰«æ
+		//åº”è¯¥åœ¨è§„çº¦ä¸ºActualListæ—¶è¿›è¡Œåˆ¤æ–­ æ­¤æ—¶å‚æ•°å·²ç»æ‰«æå®Œæ¯• 
 
 		/*int formalParamNum = calledFunc.formalParaNum;
 		int passedParamNum = stoi(expressionLoop.value);
@@ -1027,37 +1027,37 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 			return false;
 		}*/
 
-		Index idx = { calledFunc.funcTableIdx,passedParamNum };//0ÊÇ·µ»ØÖµ
-		string result = getArgName(idx, true);//·µ»ØÖµ
+		Index idx = { calledFunc.funcTableIdx,passedParamNum };//0æ˜¯è¿”å›å€¼
+		string result = getArgName(idx, true);//è¿”å›å€¼
 		string arg1 = getArgName(expression.idx);
-		//Éú³ÉÒ»¸öÊµ²Î¸³ÖµËÄÔªÊ½
+		//ç”Ÿæˆä¸€ä¸ªå®å‚èµ‹å€¼å››å…ƒå¼
 		//func(a,b)
 		//(:=,T1,-,func_param_a)
 		//(:=,T2,-,func_param_b)
 		//(call,-,-,func)
 		setQuad(Quad{ getNextQuad(),":=",arg1,"-",result });
 
-		//Ä¿±ê´úÂë
+		//ç›®æ ‡ä»£ç 
 		string rs = targetCodeGenerator.getOperand(expression.idx);
-		targetCodeGenerator.setInstruction({ "sw",rs,"($sp)","" });//a = T1  (T1 = imm)  ÎªÁÙÊ±±äÁ¿·ÖÅä´æ´¢¿Õ¼ä
+		targetCodeGenerator.setInstruction({ "sw",rs,"($sp)","" });//a = T1  (T1 = imm)  ä¸ºä¸´æ—¶å˜é‡åˆ†é…å­˜å‚¨ç©ºé—´
 		targetCodeGenerator.incStackPointer(1);//sp  = sp + 4 
 
-		//ÏÂÒ»¸ö²ÎÊı
+		//ä¸‹ä¸€ä¸ªå‚æ•°
 		passedParamNum++;
-		//Êµ²Î¸öÊı+1
+		//å®å‚ä¸ªæ•°+1
 		symbol.value = to_string(passedParamNum);
 	}
 	else if (prod.left == "ActualParamList" && prod.right[0] == "$") {//ActualParamList->$
 		//CallFunction-> ( CallCheck ActualParamList($)
-		//´ËÊ±Õ»¶¥ÎªCallCheck 
+		//æ­¤æ—¶æ ˆé¡¶ä¸ºCallCheck 
 		GrammarSymbol callCheck = grammarSymbolAttrStack.back();
 
 		symbol.name = prod.left;
 
-		//ÔÚCallCheckÖĞÕÒµ½´æ·ÅµÄ±»µ÷ÓÃº¯Êı·ûºÅ
+		//åœ¨CallCheckä¸­æ‰¾åˆ°å­˜æ”¾çš„è¢«è°ƒç”¨å‡½æ•°ç¬¦å·
 		Symbol& calledFunc = symbolTables[callCheck.idx.tableIdx].getSymbol(callCheck.idx.symbolIdx);
 
-		int formalParamNum = calledFunc.formalParaNum;//ÔÚ±»µ÷ÓÃº¯Êı·ûºÅÖĞµÃµ½ĞÎ²Î¸öÊı
+		int formalParamNum = calledFunc.formalParaNum;//åœ¨è¢«è°ƒç”¨å‡½æ•°ç¬¦å·ä¸­å¾—åˆ°å½¢å‚ä¸ªæ•°
 		if (0 != formalParamNum) {
 			cerr << "Semantic Analysis ERROR!" << endl;
 			cerr << "None parameters given!" << endl;
@@ -1066,7 +1066,7 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 			return false;
 		}
 
-		symbol.value = "0";//0Êµ²Î
+		symbol.value = "0";//0å®å‚
 	}
 	else if (prod.left == "ActualParamList" && prod.right[0] == "ExpressionLoop") {
 		//CallFunction->( CallCheck ExpressionLoop Expression
@@ -1076,13 +1076,13 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 
 		symbol.name = prod.left;
 
-		//ÔÚCallCheckÖĞÕÒµ½´æ·ÅµÄ±»µ÷ÓÃº¯Êı·ûºÅ
+		//åœ¨CallCheckä¸­æ‰¾åˆ°å­˜æ”¾çš„è¢«è°ƒç”¨å‡½æ•°ç¬¦å·
 		Symbol& calledFunc = symbolTables[callCheck.idx.tableIdx].getSymbol(callCheck.idx.symbolIdx);
 
-		int formalParamNum = calledFunc.formalParaNum;//ĞÎ²Î¸öÊı
-		int passedParamNum = stoi(expressionLoop.value);//Êµ¼Ê´«µİµÄÊµ²Î¸öÊı
+		int formalParamNum = calledFunc.formalParaNum;//å½¢å‚ä¸ªæ•°
+		int passedParamNum = stoi(expressionLoop.value);//å®é™…ä¼ é€’çš„å®å‚ä¸ªæ•°
 
-		if (formalParamNum < passedParamNum) {//´«µİ²ÎÊı¹ı¶à
+		if (formalParamNum < passedParamNum) {//ä¼ é€’å‚æ•°è¿‡å¤š
 			cerr << "Semantic Analysis ERROR!" << endl;
 			cerr << "More parameters given!" << endl;
 			cerr << "FUNCTION " << calledFunc.varName << " expected " << formalParamNum <<
@@ -1090,11 +1090,11 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 			return false;
 		}
 
-		//´Ë´¦µÄpassedParamNumÎª×îºóÒ»¸ö²ÎÊıË÷Òı
+		//æ­¤å¤„çš„passedParamNumä¸ºæœ€åä¸€ä¸ªå‚æ•°ç´¢å¼•
 		Index idx = { calledFunc.funcTableIdx,passedParamNum };
-		string result = getArgName(idx, true);//·µ»ØÖµ
+		string result = getArgName(idx, true);//è¿”å›å€¼
 		string arg1 = getArgName(expression.idx);
-		//Éú³ÉÒ»¸öÊµ²Î¸³ÖµËÄÔªÊ½
+		//ç”Ÿæˆä¸€ä¸ªå®å‚èµ‹å€¼å››å…ƒå¼
 		//func(a,b)
 		//(:=,T1,-,func_param_a)
 		//(:=,T2,-,func_param_b)
@@ -1102,7 +1102,7 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 
 		setQuad(Quad{ getNextQuad(),":=",arg1,"-",result });
 
-		//ÅĞ¶Ï²ÎÊı´«µİÊÇ·ñ¹ıÉÙ
+		//åˆ¤æ–­å‚æ•°ä¼ é€’æ˜¯å¦è¿‡å°‘
 		if (formalParamNum > passedParamNum) {
 			cerr << "Semantic Analysis ERROR!" << endl;
 			cerr << "Less parameters given!" << endl;
@@ -1111,12 +1111,12 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 			return false;
 		}
 
-		//Ä¿±ê´úÂë
+		//ç›®æ ‡ä»£ç 
 		string rs = targetCodeGenerator.getOperand(expression.idx);
-		targetCodeGenerator.setInstruction({ "sw",rs,"($sp)","" });//func_param_x = T1  (T1 = a a = imm)  ÎªÁÙÊ±±äÁ¿·ÖÅä´æ´¢¿Õ¼ä ´Ë´¦±íÊ¾¸ÃÁÙÊ±±äÁ¿ÊÇ±»µ÷ÓÃº¯ÊıÊµ²Î
+		targetCodeGenerator.setInstruction({ "sw",rs,"($sp)","" });//func_param_x = T1  (T1 = a a = imm)  ä¸ºä¸´æ—¶å˜é‡åˆ†é…å­˜å‚¨ç©ºé—´ æ­¤å¤„è¡¨ç¤ºè¯¥ä¸´æ—¶å˜é‡æ˜¯è¢«è°ƒç”¨å‡½æ•°å®å‚
 		targetCodeGenerator.incStackPointer(1);//sp  = sp + 4 
 
-		symbol.value = to_string(passedParamNum);//´«µİµÄÊµ²Î¸öÊıÎªÕıÈ·µÄ
+		symbol.value = to_string(passedParamNum);//ä¼ é€’çš„å®å‚ä¸ªæ•°ä¸ºæ­£ç¡®çš„
 	}
 	else if (prod.left == "CallFunction") {//CallFunction->( CallCheck ActualParamList )
 		//Factor->id ( CallCheck ActualParamList )
@@ -1127,25 +1127,25 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 		symbol.value = "";
 		symbol.idx = callCheck.idx;
 
-		//Éú³ÉÒ»¸öº¯Êıµ÷ÓÃËÄÔªÊ½
+		//ç”Ÿæˆä¸€ä¸ªå‡½æ•°è°ƒç”¨å››å…ƒå¼
 		setQuad(Quad{ getNextQuad(),"call","-","-",id.value });
 	}
 	else if (prod.left == "FTYPE" && prod.right[0] == "CallFunction") {//FTYPE->CallFunction
-		//´«µİÊôĞÔ¼´¿É
+		//ä¼ é€’å±æ€§å³å¯
 		GrammarSymbol callFunction = grammarSymbolAttrStack.back();
 
 		symbol.name = prod.left;
-		symbol.value = "CallFunction";//ËæÒâ µ«²»Îª¿Õ  Óëftype->$Çø±ğ
+		symbol.value = "CallFunction";//éšæ„ ä½†ä¸ä¸ºç©º  ä¸ftype->$åŒºåˆ«
 		symbol.idx = callFunction.idx;
 	}
 	else if (prod.left == "Program") {
-		//ÓïÒå·ÖÎöÍê±Ï
-		//ÅĞ¶ÏÊÇ·ñÓĞmainº¯Êı
+		//è¯­ä¹‰åˆ†æå®Œæ¯•
+		//åˆ¤æ–­æ˜¯å¦æœ‰mainå‡½æ•°
 		if (mainFuncLine == -1) {
 			cerr << "Semantic Analysis ERROR!" << endl;
 			cerr << "FUNCTION main was not defined! Please chack it!" << endl;
 		}
-		//Éú³ÉµÚ0¸öËÄÔªÊ½
+		//ç”Ÿæˆç¬¬0ä¸ªå››å…ƒå¼
 		setQuad(Quad{ 0,"j","-","-",to_string(mainFuncLine) });
 
 		printQuads();
@@ -1159,13 +1159,13 @@ bool SemanticAnalyzer::semanticCheck(vector<GrammarSymbol>& grammarSymbolAttrSta
 		symbol.value = "";
 	}
 
-	//²úÉúÊ½ÓÒ²¿³¤¶È
+	//äº§ç”Ÿå¼å³éƒ¨é•¿åº¦
 	int len = prod.right[0] != "$" ? prod.right.size() : 0;
-	//¹æÔ¼Ö®ºó ÊôĞÔÕ»ÀïÃæµÄ±»¹æÔ¼´®³öÕ»
+	//è§„çº¦ä¹‹å å±æ€§æ ˆé‡Œé¢çš„è¢«è§„çº¦ä¸²å‡ºæ ˆ
 	for (int i = 0; i < len; i++) {
 		grammarSymbolAttrStack.pop_back();
 	}
-	//ÎÄ·¨ÊôĞÔÕ»ÀïÃæÑ¹ÈëĞÂÎÄ·¨·ûºÅ¡¢ÊôĞÔ
+	//æ–‡æ³•å±æ€§æ ˆé‡Œé¢å‹å…¥æ–°æ–‡æ³•ç¬¦å·ã€å±æ€§
 	grammarSymbolAttrStack.push_back(symbol);
 
 	return true;
